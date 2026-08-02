@@ -1,12 +1,8 @@
-# Module 2 — JOINs ⭐⭐⭐⭐⭐
+# Joins
 
-> **Goal:** Learn how to combine data from multiple tables efficiently. JOINs are among the most frequently asked SQL interview topics because almost every real-world application uses relational data.
+## 1. What is a JOIN?
 
----
-
-# 1. What is a JOIN?
-
-## What is it?
+### What is it?
 
 A **JOIN** combines rows from two or more tables based on a related column.
 
@@ -48,7 +44,7 @@ Bob     150
 
 ---
 
-## Why do we use JOINs?
+### Why do we use JOINs?
 
 Most databases are **normalized**, meaning related data is stored in separate tables.
 
@@ -74,7 +70,7 @@ and JOIN them whenever needed.
 
 ---
 
-## Mental Model
+### Mental Model
 
 Imagine two Excel sheets.
 
@@ -90,7 +86,7 @@ users.id = orders.user_id
 
 ---
 
-# Types of JOINs
+## Types of JOINs
 
 ```text
                 LEFT TABLE
@@ -107,9 +103,9 @@ users.id = orders.user_id
 
 ---
 
-# 2. INNER JOIN ⭐⭐⭐⭐⭐
+## 2. INNER JOIN ⭐⭐⭐⭐⭐
 
-## What is it?
+### What is it?
 
 Returns **only matching rows** from both tables.
 
@@ -137,7 +133,7 @@ If a user has no orders, they won't appear.
 
 ---
 
-## Key Points
+### Key Points
 
 ✅ Most commonly used JOIN
 
@@ -157,7 +153,7 @@ INNER JOIN
 
 ---
 
-## Common Mistake
+### Common Mistake
 
 Thinking unmatched rows are included.
 
@@ -165,15 +161,15 @@ They're not.
 
 ---
 
-## Memory Trick
+### Memory Trick
 
 > **INNER = Only Common Records**
 
 ---
 
-## Interview Questions & Answers
+### Interview Questions & Answers
 
-### Q1. Difference between JOIN and INNER JOIN?
+#### Q1. Difference between JOIN and INNER JOIN?
 
 **Answer**
 
@@ -181,7 +177,7 @@ None. `JOIN` defaults to `INNER JOIN`.
 
 ---
 
-### Q2. When do you use INNER JOIN?
+#### Q2. When do you use INNER JOIN?
 
 **Answer**
 
@@ -189,9 +185,9 @@ When only records with matching values in both tables are needed.
 
 ---
 
-# 3. LEFT JOIN ⭐⭐⭐⭐⭐
+## 3. LEFT JOIN ⭐⭐⭐⭐⭐
 
-## What is it?
+### What is it?
 
 Returns
 
@@ -241,7 +237,7 @@ Charlie  NULL
 
 ---
 
-## Key Points
+### Key Points
 
 ✅ Keeps every left-table row
 
@@ -249,7 +245,7 @@ Charlie  NULL
 
 ---
 
-## Common Mistake
+### Common Mistake
 
 ```sql
 SELECT *
@@ -277,15 +273,15 @@ OR o.amount IS NULL
 
 ---
 
-## Memory Trick
+### Memory Trick
 
 > **LEFT = Keep Everything on the Left**
 
 ---
 
-## Interview Questions & Answers
+### Interview Questions & Answers
 
-### Q1. Why does a LEFT JOIN sometimes behave like an INNER JOIN?
+#### Q1. Why does a LEFT JOIN sometimes behave like an INNER JOIN?
 
 **Answer**
 
@@ -293,7 +289,7 @@ Because filtering the right table in the `WHERE` clause removes NULL rows, elimi
 
 ---
 
-### Q2. Common use cases?
+#### Q2. Common use cases?
 
 **Answer**
 
@@ -301,9 +297,9 @@ Finding users without orders, products without reviews, employees without manage
 
 ---
 
-# 4. RIGHT JOIN ⭐⭐⭐
+## 4. RIGHT JOIN ⭐⭐⭐
 
-## What is it?
+### What is it?
 
 Opposite of LEFT JOIN.
 
@@ -322,7 +318,7 @@ ON u.id=o.user_id;
 
 ---
 
-## Key Points
+### Key Points
 
 ✅ Keeps right table
 
@@ -332,15 +328,15 @@ Many teams rewrite it as LEFT JOIN for readability.
 
 ---
 
-## Memory Trick
+### Memory Trick
 
 > **RIGHT = Keep Right Table**
 
 ---
 
-## Interview Questions & Answers
+### Interview Questions & Answers
 
-### Q1. Should we use RIGHT JOIN?
+#### Q1. Should we use RIGHT JOIN?
 
 **Answer**
 
@@ -348,9 +344,9 @@ It's valid, but many teams prefer `LEFT JOIN` because it's generally easier to r
 
 ---
 
-# 5. FULL OUTER JOIN ⭐⭐⭐
+## 5. FULL OUTER JOIN ⭐⭐⭐
 
-## What is it?
+### What is it?
 
 Returns
 
@@ -390,7 +386,7 @@ David
 
 ---
 
-## Key Points
+### Key Points
 
 ✅ Returns everything
 
@@ -398,15 +394,15 @@ David
 
 ---
 
-## Memory Trick
+### Memory Trick
 
 > **FULL = Everything**
 
 ---
 
-## Interview Questions & Answers
+### Interview Questions & Answers
 
-### Q1. When is FULL JOIN useful?
+#### Q1. When is FULL JOIN useful?
 
 **Answer**
 
@@ -414,9 +410,9 @@ When comparing two datasets and identifying matches as well as records unique to
 
 ---
 
-# 6. SELF JOIN ⭐⭐⭐⭐
+## 6. SELF JOIN ⭐⭐⭐⭐
 
-## What is it?
+### What is it?
 
 Joining a table with itself.
 
@@ -450,7 +446,7 @@ Bob     Sarah
 
 ---
 
-## Use Cases
+### Use Cases
 
 * Employee → Manager
 
@@ -460,7 +456,7 @@ Bob     Sarah
 
 ---
 
-## Key Points
+### Key Points
 
 ✅ Uses aliases
 
@@ -473,15 +469,15 @@ Otherwise SQL can't distinguish the tables.
 
 ---
 
-## Memory Trick
+### Memory Trick
 
 > **SELF JOIN = Same table, different roles**
 
 ---
 
-## Interview Questions & Answers
+### Interview Questions & Answers
 
-### Q1. Why are aliases required?
+#### Q1. Why are aliases required?
 
 **Answer**
 
@@ -489,7 +485,7 @@ Because SQL must distinguish between the two logical instances of the same table
 
 ---
 
-# 7. Multi-table JOIN ⭐⭐⭐⭐
+## 7. Multi-table JOIN ⭐⭐⭐⭐
 
 Joining more than two tables.
 
@@ -527,7 +523,7 @@ Products
 
 ---
 
-## Key Points
+### Key Points
 
 ✅ SQL joins one table at a time
 
@@ -535,9 +531,9 @@ Products
 
 ---
 
-## Interview Questions & Answers
+### Interview Questions & Answers
 
-### Q1. Is there a limit on JOINs?
+#### Q1. Is there a limit on JOINs?
 
 **Answer**
 
@@ -545,7 +541,7 @@ SQL supports many joins, but excessive joins can make queries harder to maintain
 
 ---
 
-# 8. Semi Join ⭐⭐⭐⭐
+## 8. Semi Join ⭐⭐⭐⭐
 
 SQL has **no explicit SEMI JOIN keyword**.
 
@@ -577,7 +573,7 @@ No duplicate order rows.
 
 ---
 
-## Why not INNER JOIN?
+### Why not INNER JOIN?
 
 INNER JOIN
 
@@ -597,7 +593,7 @@ Bob
 
 ---
 
-## Key Points
+### Key Points
 
 ✅ Returns rows from the left table only
 
@@ -607,15 +603,15 @@ Bob
 
 ---
 
-## Memory Trick
+### Memory Trick
 
 > **SEMI = "Does a match exist?"**
 
 ---
 
-## Interview Questions & Answers
+### Interview Questions & Answers
 
-### Q1. Why use EXISTS instead of INNER JOIN?
+#### Q1. Why use EXISTS instead of INNER JOIN?
 
 **Answer**
 
@@ -623,7 +619,7 @@ When you only need to know whether a related row exists. `EXISTS` avoids returni
 
 ---
 
-# 9. Anti Join ⭐⭐⭐⭐
+## 9. Anti Join ⭐⭐⭐⭐
 
 Again,
 
@@ -665,7 +661,7 @@ WHERE o.user_id=u.id
 
 ---
 
-## Use Cases
+### Use Cases
 
 * Customers without orders
 
@@ -675,7 +671,7 @@ WHERE o.user_id=u.id
 
 ---
 
-## Key Points
+### Key Points
 
 ✅ Finds missing relationships
 
@@ -683,15 +679,15 @@ WHERE o.user_id=u.id
 
 ---
 
-## Memory Trick
+### Memory Trick
 
 > **ANTI = No Match Exists**
 
 ---
 
-## Interview Questions & Answers
+### Interview Questions & Answers
 
-### Q1. Difference between Anti Join and Semi Join?
+#### Q1. Difference between Anti Join and Semi Join?
 
 **Answer**
 
@@ -699,7 +695,7 @@ A **Semi Join** returns rows that **have** a matching record, while an **Anti Jo
 
 ---
 
-# 🚀 Module 2 — One-Page Revision
+## 🚀 Module 2 — One-Page Revision
 
 | Topic            | Remember                                                              |
 | ---------------- | --------------------------------------------------------------------- |
@@ -714,7 +710,7 @@ A **Semi Join** returns rows that **have** a matching record, while an **Anti Jo
 
 ---
 
-# 🎯 Module 2 Interview Quick Fire
+## 🎯 Module 2 Interview Quick Fire
 
 ### 1. Which JOIN is used most in production?
 

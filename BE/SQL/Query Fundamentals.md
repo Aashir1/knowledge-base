@@ -7,9 +7,9 @@ This module teaches **how SQL thinks** before we move to Joins, Window Functions
 
 ---
 
-# 1. SQL Execution Order ⭐⭐⭐⭐⭐
+## 1. SQL Execution Order ⭐⭐⭐⭐⭐
 
-## What is it?
+### What is it?
 
 Although we **write** SQL in one order, the database **executes** it in a different order.
 
@@ -17,7 +17,7 @@ Knowing this explains many SQL errors and interview questions.
 
 ---
 
-## Why do we use it?
+### Why do we use it?
 
 Understanding execution order helps you:
 
@@ -28,7 +28,7 @@ Understanding execution order helps you:
 
 ---
 
-## Mental Model
+### Mental Model
 
 Imagine searching employees.
 
@@ -47,7 +47,7 @@ The database thinks like this—not like the query is written.
 
 ---
 
-## Execution Order
+### Execution Order
 
 | Step | Clause       | Purpose           |
 | ---- | ------------ | ----------------- |
@@ -62,7 +62,7 @@ The database thinks like this—not like the query is written.
 
 ---
 
-## Example
+### Example
 
 ```sql
 SELECT department,
@@ -95,7 +95,7 @@ LIMIT
 
 ---
 
-## Key Points
+### Key Points
 
 ✅ SQL execution ≠ SQL writing order
 
@@ -107,7 +107,7 @@ LIMIT
 
 ---
 
-## Common Mistakes
+### Common Mistakes
 
 ❌ Using SELECT alias inside WHERE
 
@@ -125,7 +125,7 @@ WHERE salary*12 > 50000;
 
 ---
 
-## Memory Trick
+### Memory Trick
 
 ```
 FROM
@@ -144,9 +144,9 @@ Remember:
 
 ---
 
-## Interview Questions & Answers
+### Interview Questions & Answers
 
-### Q1. Why can't we use aliases in WHERE?
+#### Q1. Why can't we use aliases in WHERE?
 
 **Answer**
 
@@ -154,7 +154,7 @@ Because `WHERE` executes before `SELECT`. The alias is created during the `SELEC
 
 ---
 
-### Q2. Which executes first: WHERE or GROUP BY?
+#### Q2. Which executes first: WHERE or GROUP BY?
 
 **Answer**
 
@@ -162,7 +162,7 @@ Because `WHERE` executes before `SELECT`. The alias is created during the `SELEC
 
 ---
 
-### Q3. Which executes first: ORDER BY or SELECT?
+#### Q3. Which executes first: ORDER BY or SELECT?
 
 **Answer**
 
@@ -170,9 +170,9 @@ Because `WHERE` executes before `SELECT`. The alias is created during the `SELEC
 
 ---
 
-# 2. WHERE vs HAVING ⭐⭐⭐⭐⭐
+## 2. WHERE vs HAVING ⭐⭐⭐⭐⭐
 
-## What is it?
+### What is it?
 
 Both filter data.
 
@@ -180,7 +180,7 @@ The difference is **what** they filter.
 
 ---
 
-## Mental Model
+### Mental Model
 
 ```
 Rows
@@ -198,9 +198,9 @@ HAVING
 
 ---
 
-## Example
+### Example
 
-### WHERE
+#### WHERE
 
 ```sql
 SELECT *
@@ -212,7 +212,7 @@ Removes employees earning less than 5000.
 
 ---
 
-### HAVING
+#### HAVING
 
 ```sql
 SELECT department,
@@ -226,7 +226,7 @@ Removes departments having 5 or fewer employees.
 
 ---
 
-## Key Points
+### Key Points
 
 ✅ WHERE works before grouping
 
@@ -238,7 +238,7 @@ Removes departments having 5 or fewer employees.
 
 ---
 
-## Common Mistake
+### Common Mistake
 
 Wrong
 
@@ -254,7 +254,7 @@ HAVING COUNT(*) > 5
 
 ---
 
-## Memory Trick
+### Memory Trick
 
 ```
 WHERE → Rows
@@ -264,9 +264,9 @@ HAVING → Groups
 
 ---
 
-## Interview Questions & Answers
+### Interview Questions & Answers
 
-### Q1. Difference between WHERE and HAVING?
+#### Q1. Difference between WHERE and HAVING?
 
 **Answer**
 
@@ -274,7 +274,7 @@ HAVING → Groups
 
 ---
 
-### Q2. Can HAVING be used without GROUP BY?
+#### Q2. Can HAVING be used without GROUP BY?
 
 **Answer**
 
@@ -282,7 +282,7 @@ Yes. If there's no `GROUP BY`, the entire result set is treated as one group, th
 
 ---
 
-### Q3. Why can't aggregate functions be used in WHERE?
+#### Q3. Why can't aggregate functions be used in WHERE?
 
 **Answer**
 
@@ -290,15 +290,15 @@ Because `WHERE` executes before aggregation. Aggregate values don't exist yet.
 
 ---
 
-# 3. DISTINCT ⭐⭐⭐
+## 3. DISTINCT ⭐⭐⭐
 
-## What is it?
+### What is it?
 
 Removes duplicate rows from the result.
 
 ---
 
-## Example
+### Example
 
 Table
 
@@ -326,7 +326,7 @@ HR
 
 ---
 
-## Key Points
+### Key Points
 
 ✅ Removes duplicate result rows
 
@@ -338,7 +338,7 @@ HR
 
 ---
 
-## Common Mistake
+### Common Mistake
 
 ```sql
 SELECT DISTINCT department,salary
@@ -348,7 +348,7 @@ Duplicates are checked on **both columns together**, not just `department`.
 
 ---
 
-## Memory Trick
+### Memory Trick
 
 ```
 DISTINCT = UNIQUE rows
@@ -356,9 +356,9 @@ DISTINCT = UNIQUE rows
 
 ---
 
-## Interview Questions & Answers
+### Interview Questions & Answers
 
-### Q1. Does DISTINCT remove duplicate rows or duplicate values?
+#### Q1. Does DISTINCT remove duplicate rows or duplicate values?
 
 **Answer**
 
@@ -366,7 +366,7 @@ It removes duplicate rows based on the selected columns.
 
 ---
 
-### Q2. Is DISTINCT expensive?
+#### Q2. Is DISTINCT expensive?
 
 **Answer**
 
@@ -374,15 +374,15 @@ It can be. The database usually needs to sort or hash the result to eliminate du
 
 ---
 
-# 4. CASE ⭐⭐⭐⭐
+## 4. CASE ⭐⭐⭐⭐
 
-## What is it?
+### What is it?
 
 SQL's **if-else** statement.
 
 ---
 
-## Example
+### Example
 
 ```sql
 SELECT name,
@@ -396,7 +396,7 @@ FROM employees;
 
 ---
 
-## Key Points
+### Key Points
 
 ✅ Conditional logic
 
@@ -408,7 +408,7 @@ FROM employees;
 
 ---
 
-## Common Uses
+### Common Uses
 
 * Categorization
 * Conditional aggregation
@@ -417,7 +417,7 @@ FROM employees;
 
 ---
 
-## Memory Trick
+### Memory Trick
 
 ```
 CASE = if...else
@@ -425,9 +425,9 @@ CASE = if...else
 
 ---
 
-## Interview Questions & Answers
+### Interview Questions & Answers
 
-### Q1. Where can CASE be used?
+#### Q1. Where can CASE be used?
 
 **Answer**
 
@@ -435,7 +435,7 @@ Inside `SELECT`, `ORDER BY`, `GROUP BY`, and aggregate expressions. It provides 
 
 ---
 
-### Q2. Why is CASE useful?
+#### Q2. Why is CASE useful?
 
 **Answer**
 
@@ -443,15 +443,15 @@ It allows business logic, such as classifying employees into salary bands or con
 
 ---
 
-# 5. COALESCE ⭐⭐⭐⭐
+## 5. COALESCE ⭐⭐⭐⭐
 
-## What is it?
+### What is it?
 
 Returns the **first non-NULL value**.
 
 ---
 
-## Example
+### Example
 
 ```sql
 SELECT
@@ -470,7 +470,7 @@ FROM employees;
 
 ---
 
-## Key Points
+### Key Points
 
 ✅ Handles NULL safely
 
@@ -482,7 +482,7 @@ FROM employees;
 
 ---
 
-## Common Mistake
+### Common Mistake
 
 Without COALESCE
 
@@ -498,7 +498,7 @@ With COALESCE
 
 ---
 
-## Memory Trick
+### Memory Trick
 
 ```
 COALESCE
@@ -510,9 +510,9 @@ First Available Value
 
 ---
 
-## Interview Questions & Answers
+### Interview Questions & Answers
 
-### Q1. Why use COALESCE?
+#### Q1. Why use COALESCE?
 
 **Answer**
 
@@ -520,7 +520,7 @@ To replace `NULL` with a default value, preventing incorrect results or `NULL` p
 
 ---
 
-### Q2. Difference between COALESCE and CASE?
+#### Q2. Difference between COALESCE and CASE?
 
 **Answer**
 
@@ -528,9 +528,9 @@ To replace `NULL` with a default value, preventing incorrect results or `NULL` p
 
 ---
 
-# 6. EXISTS vs IN vs ANY ⭐⭐⭐⭐⭐
+## 6. EXISTS vs IN vs ANY ⭐⭐⭐⭐⭐
 
-## Mental Model
+### Mental Model
 
 ```
 IN
@@ -556,7 +556,7 @@ Compares with at least one value
 
 ---
 
-## IN
+### IN
 
 ```sql
 WHERE department_id IN (1,2,3)
@@ -566,7 +566,7 @@ Use for **known value lists**.
 
 ---
 
-## EXISTS
+### EXISTS
 
 ```sql
 WHERE EXISTS(
@@ -580,7 +580,7 @@ Use when checking whether related rows exist.
 
 ---
 
-## ANY
+### ANY
 
 ```sql
 WHERE salary > ANY(
@@ -597,7 +597,7 @@ Greater than at least one manager's salary.
 
 ---
 
-## Key Points
+### Key Points
 
 | Operator | Best Use              |
 | -------- | --------------------- |
@@ -607,13 +607,13 @@ Greater than at least one manager's salary.
 
 ---
 
-## Performance
+### Performance
 
 Modern databases (like PostgreSQL and MySQL) often optimize `IN` and `EXISTS` into similar execution plans. Choose the one that best expresses your intent unless profiling shows a difference.
 
 ---
 
-## Memory Trick
+### Memory Trick
 
 ```
 IN
@@ -637,9 +637,9 @@ At least one
 
 ---
 
-## Interview Questions & Answers
+### Interview Questions & Answers
 
-### Q1. EXISTS vs IN?
+#### Q1. EXISTS vs IN?
 
 **Answer**
 
@@ -647,7 +647,7 @@ At least one
 
 ---
 
-### Q2. What does ANY mean?
+#### Q2. What does ANY mean?
 
 **Answer**
 
@@ -655,15 +655,15 @@ It compares a value against a set and returns true if the comparison succeeds fo
 
 ---
 
-# 7. UNION vs UNION ALL ⭐⭐⭐⭐
+## 7. UNION vs UNION ALL ⭐⭐⭐⭐
 
-## What is it?
+### What is it?
 
 Both combine the results of multiple queries.
 
 ---
 
-## UNION
+### UNION
 
 ```sql
 SELECT city FROM customers
@@ -677,7 +677,7 @@ Duplicates removed.
 
 ---
 
-## UNION ALL
+### UNION ALL
 
 ```sql
 SELECT city FROM customers
@@ -691,7 +691,7 @@ Duplicates kept.
 
 ---
 
-## Key Points
+### Key Points
 
 | UNION                          | UNION ALL        |
 | ------------------------------ | ---------------- |
@@ -701,13 +701,13 @@ Duplicates kept.
 
 ---
 
-## Best Practice
+### Best Practice
 
 > Prefer **UNION ALL** unless duplicate removal is required.
 
 ---
 
-## Memory Trick
+### Memory Trick
 
 ```
 UNION
@@ -725,9 +725,9 @@ Everything
 
 ---
 
-## Interview Questions & Answers
+### Interview Questions & Answers
 
-### Q1. UNION vs UNION ALL?
+#### Q1. UNION vs UNION ALL?
 
 **Answer**
 
@@ -735,7 +735,7 @@ Everything
 
 ---
 
-### Q2. Which one should we prefer?
+#### Q2. Which one should we prefer?
 
 **Answer**
 
@@ -743,7 +743,7 @@ Use `UNION ALL` by default if duplicates are acceptable. It's more efficient bec
 
 ---
 
-# 🚀 Module 1 — One-Page Revision
+## 🚀 Module 1 — One-Page Revision
 
 | Topic               | Remember                                                                  |
 | ------------------- | ------------------------------------------------------------------------- |
@@ -759,7 +759,7 @@ Use `UNION ALL` by default if duplicates are acceptable. It's more efficient bec
 | UNION               | Combine results and remove duplicates                                     |
 | UNION ALL           | Combine results and keep duplicates                                       |
 
-## 🎯 Module 1 Interview Quick Fire
+### 🎯 Module 1 Interview Quick Fire
 
 1. **Why can't aliases be used in `WHERE`?**
 

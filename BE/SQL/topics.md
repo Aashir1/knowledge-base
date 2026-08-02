@@ -80,7 +80,7 @@
 
 ---
 
-# Optional (Only if using PostgreSQL heavily)
+## Optional (Only if using PostgreSQL heavily)
 
 * JSONB
 * GIN Index
@@ -89,7 +89,7 @@
 
 ---
 
-# What is **NOT** Important for Most Full Stack Interviews
+## What is **NOT** Important for Most Full Stack Interviews
 
 You can safely skip these unless you're interviewing for a database-focused backend role:
 
@@ -106,7 +106,7 @@ You can safely skip these unless you're interviewing for a database-focused back
 
 ---
 
-# Priority (80/20)
+## Priority (80/20)
 
 If you master just these, you'll be ahead of most candidates:
 

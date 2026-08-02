@@ -21,4 +21,9 @@
 - **Implementations**
   - [Concept: bind()](frontend/implementations/concept-bind.html)
 
+- **Backend**
+  - [SQL Syllabus](BE/SQL/topics.md)
+  - [Query Fundamentals](BE/SQL/Query%20Fundamentals.md)
+  - [Joins](BE/SQL/Joins.md)
+
 - [Topics Format Guide](topics-format.md)
