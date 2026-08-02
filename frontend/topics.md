@@ -1,4 +1,6 @@
-### React Topics We'll Cover
+# Topics Overview
+
+## React Topics We'll Cover
 
 -   ✅ Rendering Lifecycle
 -   ✅ Virtual DOM
@@ -24,7 +26,7 @@
 -   ⏳ Keys & List Rendering
 -   ⏳ Controlled vs Uncontrolled Components
 
-### JavaScript Topics
+## JavaScript Topics
 
 -   ✅ Closures
 -   ✅ call / apply / bind
@@ -42,7 +44,7 @@
 -   ⏳ Currying
 -   ⏳ Deep vs Shallow Copy
 
-### Frontend System Design
+## Frontend System Design
 
 -   Component architecture
 -   State management (Redux vs Context vs Zustand)
@@ -55,7 +57,7 @@
 -   File uploads
 -   Performance optimization
 
-### Browser
+## Browser
 
 -   Rendering pipeline
 -   Reflow vs Repaint
@@ -66,7 +68,7 @@
 -   Web Workers
 -   Event Bubbling & Capturing
 
-### TypeScript
+## TypeScript
 
 -   Generics
 -   Utility Types

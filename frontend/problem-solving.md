@@ -110,3 +110,20 @@ For each one, prepare:
 * Real frontend usage
 
 This list gives the best balance between **DSA + JavaScript + real frontend engineering**.
+
+---
+
+## Coding Interview (DSA) Quick Reference
+
+Focus areas: arrays, strings, hash maps, sliding window, two pointers, stack, queue, binary search, trees, graphs, DFS/BFS, basic dynamic programming.
+
+**Pattern-recognition cheat sheet:**
+- "Subarray/substring with a condition" → **sliding window**
+- "Sorted array, find a pair/triplet" → **two pointers**
+- "Find in sorted data fast" → **binary search**
+- "Count/group/dedupe fast" → **hash map**
+- "Nested/recursive structure (folders, org chart)" → **tree + DFS**
+- "Shortest path / level-by-level" → **BFS**
+- "Overlapping subproblems, optimal choice" → **dynamic programming**
+
+**Goal:** 150–200 problems solved with real understanding of *why* the pattern applies — not hundreds solved by memorizing solutions.

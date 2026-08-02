@@ -1,6 +1,8 @@
-# Component Architecture (Frontend System Design)
+# Frontend System Design
 
-## 1. Short explanation (What + Why)
+## Component Architecture (Frontend System Design)
+
+### 1. Short explanation (What + Why)
 
 **What:**
 Component Architecture is the way a frontend application is broken down into **small, reusable, and independent UI components** with clear responsibilities.
@@ -10,7 +12,7 @@ It improves **reusability, maintainability, scalability, and testability**, maki
 
 ---
 
-## 2. Simple internal working (Senior interview level)
+### 2. Simple internal working (Senior interview level)
 
 A good component architecture follows a **hierarchical structure**:
 
@@ -42,9 +44,9 @@ App
 
 ---
 
-## 3. Small practical example/code
+### 3. Small practical example/code
 
-### ❌ Bad
+#### ❌ Bad
 
 ```tsx
 <ProductPage />
@@ -64,7 +66,7 @@ Hard to maintain.
 
 ---
 
-### ✅ Good
+#### ✅ Good
 
 ```
 ProductPage
@@ -80,15 +82,15 @@ Each component has a **single responsibility**.
 
 ---
 
-## 4. One-line memory trick
+### 4. One-line memory trick
 
 **"Small, reusable, and composable components with one responsibility."**
 
 ---
 
-## 5. 3 important senior interview questions
+### 5. 3 important senior interview questions
 
-### Q1. What makes a good component?
+#### Q1. What makes a good component?
 
 **Answer:**
 
@@ -100,7 +102,7 @@ Each component has a **single responsibility**.
 
 ---
 
-### Q2. Smart vs Dumb (Container vs Presentational) Components?
+#### Q2. Smart vs Dumb (Container vs Presentational) Components?
 
 **Answer:**
 
@@ -121,7 +123,7 @@ ProductCard
 
 ---
 
-### Q3. How do you avoid prop drilling?
+#### Q3. How do you avoid prop drilling?
 
 **Answer:**
 Use:
@@ -135,7 +137,7 @@ Choose the smallest scope possible before introducing global state.
 
 ---
 
-## 6. Common mistakes
+### 6. Common mistakes
 
 * ❌ Creating huge "God Components"
 * ❌ Mixing UI, business logic, and API calls in one component
@@ -145,14 +147,14 @@ Choose the smallest scope possible before introducing global state.
 
 ---
 
-## 7. 30-second interview response
+### 7. 30-second interview response
 
 > "Component architecture is about organizing a frontend application into small, reusable, and independent components with clear responsibilities. I follow principles like single responsibility, composition over inheritance, and separation of concerns. I keep business logic separate from presentation, avoid large monolithic components, and use shared components and appropriate state management to build scalable and maintainable applications."
 
 
-# Authentication (Frontend System Design)
+## Authentication (Frontend System Design)
 
-## 1. Short explanation (What + Why)
+### 1. Short explanation (What + Why)
 
 **What:**
 Authentication is the process of **verifying who the user is** before allowing access to an application.
@@ -167,9 +169,9 @@ Common approaches:
 
 ---
 
-## 2. Simple internal working (Senior interview level)
+### 2. Simple internal working (Senior interview level)
 
-### Token-based flow (common in modern FE apps)
+#### Token-based flow (common in modern FE apps)
 
 ```
 User
@@ -215,7 +217,7 @@ Authorization: Bearer abc123
 
 ---
 
-### Common token storage options
+#### Common token storage options
 
 | Storage         | Pros              | Cons                     |
 | --------------- | ----------------- | ------------------------ |
@@ -225,9 +227,9 @@ Authorization: Bearer abc123
 
 ---
 
-## 3. Small practical example/code
+### 3. Small practical example/code
 
-### Protecting frontend routes (React)
+#### Protecting frontend routes (React)
 
 ```tsx
 function ProtectedRoute({ children }) {
@@ -251,7 +253,7 @@ Usage:
 
 ---
 
-### Adding token to API requests
+#### Adding token to API requests
 
 ```ts
 fetch("/api/profile", {
@@ -263,15 +265,15 @@ fetch("/api/profile", {
 
 ---
 
-## 4. One-line memory trick
+### 4. One-line memory trick
 
 **"Authentication answers: Who are you? Authorization answers: What can you access?"**
 
 ---
 
-## 5. 3 important senior interview questions
+### 5. 3 important senior interview questions
 
-### Q1. Authentication vs Authorization?
+#### Q1. Authentication vs Authorization?
 
 **Answer:**
 
@@ -284,7 +286,7 @@ fetch("/api/profile", {
 
 ---
 
-### Q2. Where should JWT tokens be stored?
+#### Q2. Where should JWT tokens be stored?
 
 **Answer:**
 
@@ -297,7 +299,7 @@ Avoid storing sensitive tokens in localStorage because XSS can access them.
 
 ---
 
-### Q3. How do you handle token expiration?
+#### Q3. How do you handle token expiration?
 
 **Answer:**
 
@@ -311,7 +313,7 @@ Common approach:
 
 ---
 
-## 6. Common mistakes
+### 6. Common mistakes
 
 * ❌ Storing sensitive tokens in localStorage without considering XSS.
 * ❌ Implementing authentication only on frontend.
@@ -321,13 +323,13 @@ Common approach:
 
 ---
 
-## 7. 30-second interview response
+### 7. 30-second interview response
 
 > "Authentication is the process of verifying a user's identity. In frontend systems, we typically implement it using sessions or tokens like JWT. After login, the frontend receives credentials or tokens and sends them with future requests. For secure applications, I prefer short-lived access tokens with refresh tokens stored in HttpOnly cookies. Authentication verifies who the user is, while authorization controls what actions they are allowed to perform."
 
-# API Caching (Frontend System Design)
+## API Caching (Frontend System Design)
 
-## 1. Short explanation (What + Why)
+### 1. Short explanation (What + Why)
 
 **What:**
 API caching is storing API responses temporarily so future requests can be served faster without calling the backend again.
@@ -352,9 +354,9 @@ Frontend → Cache → Response
 
 ---
 
-## 2. Simple internal working (Senior interview level)
+### 2. Simple internal working (Senior interview level)
 
-### Cache flow:
+#### Cache flow:
 
 ```
 User Request
@@ -375,7 +377,7 @@ Data       |
         Return Data
 ```
 
-### Common caching layers:
+#### Common caching layers:
 
 ```
 Browser Cache
@@ -393,9 +395,9 @@ Database
 
 ---
 
-## 3. Small practical example/code
+### 3. Small practical example/code
 
-### React Query API caching
+#### React Query API caching
 
 ```ts
 const { data } = useQuery({
@@ -412,7 +414,7 @@ Meaning:
 
 ---
 
-### HTTP Cache Headers
+#### HTTP Cache Headers
 
 Backend response:
 
@@ -424,9 +426,9 @@ Browser can reuse the response for 1 hour.
 
 ---
 
-## 4. Common caching strategies
+### 4. Common caching strategies
 
-### Cache First
+#### Cache First
 
 ```
 Check cache → Use cache → Update later
@@ -439,7 +441,7 @@ Good for:
 
 ---
 
-### Network First
+#### Network First
 
 ```
 Try API → If fails, use cache
@@ -451,7 +453,7 @@ Good for:
 
 ---
 
-### Stale While Revalidate
+#### Stale While Revalidate
 
 ```
 Return cached data immediately
@@ -466,15 +468,15 @@ Used by:
 
 ---
 
-## 5. One-line memory trick
+### 5. One-line memory trick
 
 **"Cache = store previous responses to avoid repeating expensive work."**
 
 ---
 
-# 6. 3 important senior interview questions
+### 6. 3 important senior interview questions
 
-### Q1. Where would you implement caching in a frontend system?
+#### Q1. Where would you implement caching in a frontend system?
 
 **Answer:**
 
@@ -487,7 +489,7 @@ Depends on data:
 
 ---
 
-### Q2. How do you handle stale data?
+#### Q2. How do you handle stale data?
 
 **Answer:**
 
@@ -500,7 +502,7 @@ Use strategies like:
 
 ---
 
-### Q3. Why is cache invalidation difficult?
+#### Q3. Why is cache invalidation difficult?
 
 **Answer:**
 
@@ -522,7 +524,7 @@ Solutions:
 
 ---
 
-# 7. Common mistakes
+### 7. Common mistakes
 
 * ❌ Caching sensitive user data incorrectly
 * ❌ No cache invalidation strategy
@@ -532,13 +534,13 @@ Solutions:
 
 ---
 
-# 8. 30-second interview response
+### 8. 30-second interview response
 
 > "API caching is the process of storing API responses temporarily to avoid unnecessary network requests. In frontend systems, I usually handle it using tools like React Query or SWR, which provide caching, revalidation, and synchronization. The main challenges are cache invalidation and stale data handling, which can be managed using TTL, stale-while-revalidate strategies, and updating or removing cache after mutations."
 
-# WebSocket Architecture (Frontend System Design)
+## WebSocket Architecture (Frontend System Design)
 
-## 1. Short explanation (What + Why)
+### 1. Short explanation (What + Why)
 
 **What:**
 WebSocket is a communication protocol that provides a **persistent, two-way connection** between client and server over a single TCP connection.
@@ -557,9 +559,9 @@ Common use cases:
 
 ---
 
-# 2. Simple internal working (Senior Interview Level)
+### 2. Simple internal working (Senior Interview Level)
 
-### Traditional HTTP (Request/Response)
+#### Traditional HTTP (Request/Response)
 
 ```text
 Client  ─── Request ───> Server
@@ -570,7 +572,7 @@ Client must ask again for new data.
 
 ---
 
-### WebSocket
+#### WebSocket
 
 ```text
 Client                 Server
@@ -584,7 +586,7 @@ Client                 Server
    ──── Message ────>
 ```
 
-### Connection lifecycle:
+#### Connection lifecycle:
 
 1. Client starts HTTP request with upgrade header:
 
@@ -604,9 +606,9 @@ Connection: Upgrade
 
 ---
 
-# 3. Small practical example/code
+### 3. Small practical example/code
 
-### Client (Browser)
+#### Client (Browser)
 
 ```javascript
 const socket = new WebSocket(
@@ -624,7 +626,7 @@ socket.onmessage = (event) => {
 
 ---
 
-### Server (Node.js)
+#### Server (Node.js)
 
 ```javascript
 const WebSocket = require("ws");
@@ -645,7 +647,7 @@ server.on("connection", socket => {
 
 ---
 
-# 4. WebSocket Architecture in Large Systems
+### 4. WebSocket Architecture in Large Systems
 
 ```text
                  Load Balancer
@@ -661,7 +663,7 @@ server.on("connection", socket => {
                Backend Services
 ```
 
-### Why Message Broker?
+#### Why Message Broker?
 
 Because users may connect to different WebSocket servers.
 
@@ -687,15 +689,15 @@ User B
 
 ---
 
-# 5. One-line Memory Trick
+### 5. One-line Memory Trick
 
 **"WebSocket = Keep one connection open and let both sides talk anytime."**
 
 ---
 
-# 6. 3 Important Senior Interview Questions
+### 6. 3 Important Senior Interview Questions
 
-## Q1. WebSocket vs HTTP polling?
+#### Q1. WebSocket vs HTTP polling?
 
 **Answer:**
 
@@ -708,7 +710,7 @@ User B
 
 ---
 
-## Q2. How do you scale WebSockets horizontally?
+#### Q2. How do you scale WebSockets horizontally?
 
 **Answer:**
 
@@ -722,7 +724,7 @@ Because each server only knows its connected clients.
 
 ---
 
-## Q3. How do you handle WebSocket disconnection?
+#### Q3. How do you handle WebSocket disconnection?
 
 **Answer:**
 
@@ -747,7 +749,7 @@ No response → reconnect
 
 ---
 
-# 7. Common Mistakes
+### 7. Common Mistakes
 
 ❌ Using WebSocket for everything
 → Normal APIs are better for CRUD operations.
@@ -762,7 +764,30 @@ No response → reconnect
 
 ---
 
-# 8. 30-Second Interview Response
+### 8. 30-Second Interview Response
 
 > "WebSocket provides a persistent, bidirectional connection between client and server, allowing real-time communication without repeated HTTP requests. The connection starts with an HTTP upgrade handshake and then both sides can send messages anytime. In scalable systems, multiple WebSocket servers are usually combined with a message broker like Redis Pub/Sub or Kafka to synchronize messages across instances. Important considerations are authentication, connection management, reconnection handling, and horizontal scaling."
 
+
+---
+
+## Frontend System Design Interview Checklist
+
+Expected heavily for Senior/Principal roles — this is about architecting a whole feature and defending tradeoffs out loud.
+
+**Practice designing:** chat app, dashboard, data table, Google Docs, YouTube, Gmail, e-commerce, analytics dashboard.
+
+**Structure your answer around these pillars (use this as a checklist in the interview):**
+1. **Component architecture** — how the UI breaks into reusable, well-scoped pieces (e.g., a chat app: `MessageList`, `MessageInput`, `ConversationSidebar`).
+2. **State management** — what's local (`useState`) vs shared (Context/Redux/Zustand) vs server-owned (React Query/SWR cache).
+3. **API caching & pagination/infinite scroll** — e.g., cache messages by conversation ID, paginate by cursor, prefetch the next page before the user hits the bottom.
+4. **Error handling** — retries, fallback UI, optimistic updates that roll back on failure.
+5. **Authentication** — token storage, protected routes, refresh flow.
+6. **Code splitting & CDN** — split by route, serve static assets from edge locations near the user.
+7. **SSR vs CSR vs SSG:**
+   - **SSR**: server builds HTML per request → fresh data, slower TTFB, good SEO. (e.g., a live dashboard)
+   - **CSR**: browser gets a blank shell + JS builds it → fast server, slow first paint. (e.g., an internal admin tool)
+   - **SSG**: HTML built once at deploy time → fastest, but data can go stale. (e.g., a marketing/blog page)
+8. **Security & monitoring** — sanitize inputs, CSP headers, error/performance tracking (Sentry, Datadog).
+
+**Interview tip:** Always state assumptions out loud first ("I'll assume ~10k concurrent users, real-time updates matter more than perfect consistency") — that's what separates senior answers from junior ones.

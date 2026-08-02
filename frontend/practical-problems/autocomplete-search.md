@@ -28,7 +28,7 @@ Common examples:
 
 ---
 
-# 2. Simple internal working (Senior Interview Level)
+## 2. Simple internal working (Senior Interview Level)
 
 Basic flow:
 
@@ -82,7 +82,7 @@ react
 
 ---
 
-# 3. Small practical example/code
+## 3. Small practical example/code
 
 ### React Component
 
@@ -179,9 +179,9 @@ export default App;
 
 ---
 
-## Production-level improvements (Senior discussion)
+### Production-level improvements (Senior discussion)
 
-### 1. Debounce API calls
+#### 1. Debounce API calls
 
 Instead of calling API immediately:
 
@@ -197,7 +197,7 @@ API call
 
 ---
 
-### 2. Cancel previous requests
+#### 2. Cancel previous requests
 
 Problem:
 
@@ -228,7 +228,7 @@ controller.abort();
 
 ---
 
-### 3. Cache previous searches
+#### 3. Cache previous searches
 
 Example:
 
@@ -252,15 +252,15 @@ No API call.
 
 ---
 
-# 4. One-line memory trick
+## 4. One-line memory trick
 
 **"Autocomplete = Input + Debounce + API + Cache + Suggestions."**
 
 ---
 
-# 5. 3 Important Senior Interview Questions
+## 5. 3 Important Senior Interview Questions
 
-## Q1. Why do we use debounce in autocomplete?
+### Q1. Why do we use debounce in autocomplete?
 
 **Answer:**
 
@@ -274,7 +274,7 @@ Benefits:
 
 ---
 
-## Q2. How do you handle race conditions in autocomplete?
+### Q2. How do you handle race conditions in autocomplete?
 
 **Answer:**
 
@@ -295,7 +295,7 @@ Solutions:
 
 ---
 
-## Q3. How would you design autocomplete for millions of records?
+### Q3. How would you design autocomplete for millions of records?
 
 **Answer:**
 
@@ -314,7 +314,7 @@ Backend:
 
 ---
 
-# 6. Common mistakes
+## 6. Common mistakes
 
 ❌ Calling API on every keystroke
 
@@ -330,6 +330,6 @@ Backend:
 
 ---
 
-# 7. 30-second interview response
+## 7. 30-second interview response
 
 > "Autocomplete search is a real-time suggestion feature where user input triggers search results. In a production implementation, I would debounce the input to avoid unnecessary API calls, cancel outdated requests using AbortController, cache repeated searches, and handle loading/error states. For large datasets, I would move search optimization to the backend using indexes and return paginated results while keeping the frontend optimized with virtualization."

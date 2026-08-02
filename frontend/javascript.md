@@ -1,12 +1,10 @@
-# Frontend Interview Preparation Guide
+# JavaScript
 
-Based on `FE-interview-topics`, in order of importance. Each topic has: a simple explanation, then a short example or analogy to anchor it in memory.
+Highest-priority interview topic. Based on `FE-interview-topics`, in order of importance. Each topic has: a simple explanation, then a short example or analogy to anchor it in memory.
 
 ---
 
-## 1. JavaScript (Highest Priority)
-
-### Closures, scope, hoisting
+## Closures, scope, hoisting
 A closure is a function that keeps access to variables from where it was born, even after the outer function is done running. Think of it as a backpack the function carries around with it.
 
 A closure gives a function access to its outer scope. In JavaScript, closures are created every time a function is created, at function creation time
@@ -35,8 +33,7 @@ console.log(b); // ReferenceError (let is in the dead zone)
 let b = 2;
 ```
 
-### `this`, bind/call/apply
-# JavaScript: `call()`, `apply()`, and `bind()`
+## `this`, bind/call/apply
 
 The easiest way to remember these methods is by thinking about **what action they perform**.
 
@@ -50,7 +47,7 @@ const person = { name: "Aashir" };
 
 ---
 
-## 1. `call()` → **"Call it NOW"**
+### `call()` → **"Call it NOW"**
 
 Runs the function immediately and sets the value of `this`.
 
@@ -64,7 +61,7 @@ Think:
 
 ---
 
-## 2. `apply()` → **"Apply it NOW with an array"**
+### `apply()` → **"Apply it NOW with an array"**
 
 Works exactly like `call()`, but arguments are passed as an array.
 
@@ -82,7 +79,7 @@ Think:
 
 ---
 
-## 3. `bind()` → **"Don't call it yet"**
+### `bind()` → **"Don't call it yet"**
 
 `bind()` does **not** execute the function.
 
@@ -102,7 +99,7 @@ Nothing happens until you call `sayHi()`.
 
 ---
 
-# Easy Analogy
+### Easy Analogy
 
 Imagine you have a TV remote.
 
@@ -112,7 +109,7 @@ Imagine you have a TV remote.
 
 ---
 
-# One Sentence to Remember
+### One Sentence to Remember
 
 - **call()** → Executes immediately.
 - **apply()** → Executes immediately with array arguments.
@@ -120,7 +117,7 @@ Imagine you have a TV remote.
 
 ---
 
-# Quick Comparison
+### Quick Comparison
 
 ```javascript
 greet.call(person);            // Runs now
@@ -133,7 +130,7 @@ fn();                          // Runs later
 
 ---
 
-# Interview Answer (30 seconds)
+### Interview Answer (30 seconds)
 
 > All three methods let us control the value of `this`.
 >
@@ -142,7 +139,7 @@ fn();                          // Runs later
 > - **`bind()`** does not invoke the function. It returns a new function with `this` permanently bound, which can be called later.
 
 
-# Event loop, microtasks vs macrotasks
+## Event loop, microtasks vs macrotasks
 
 When we executes JS code it creates **Global Execution Context**.
 If anything has to be executed first it will go into the callstack.Callstack waits for nothing.
@@ -169,7 +166,7 @@ console.log('4');
 ```
 **Memory trick:** "Microtasks are VIP guests — they always get seated before the next round of regular guests (macrotasks)."
 
-# Promises, async/await
+## Promises, async/await
 A Promise is an IOU for a value that isn't ready yet. `async/await` just lets you write that IOU-waiting code so it looks synchronous.
 ```js
 function getUser() {
@@ -193,7 +190,7 @@ Think of `await` as saying:
 
 ---
 
-## Does `await` block JavaScript?
+### Does `await` block JavaScript?
 
 **No.**
 
@@ -259,7 +256,7 @@ The `user` object doesn't have its own `greet()` method. JavaScript finds it on 
 
 ---
 
-## Prototype Chain
+### Prototype Chain
 
 When you access a property:
 
@@ -279,7 +276,7 @@ null
 
 ---
 
-## Prototype Inheritance
+### Prototype Inheritance
 
 ```javascript
 function Animal() {}
@@ -302,11 +299,11 @@ Here, `Dog.prototype` inherits from `Animal.prototype`, so every `Dog` instance 
 
 ---
 
-## Interview Answer (20 seconds)
+### Interview Answer (20 seconds)
 
 > Every constructor function has a `prototype` object. Methods placed on the prototype are shared by all instances, saving memory. When a property isn't found on an object, JavaScript looks for it on its prototype, then continues up the prototype chain until it reaches `null`. This is how JavaScript implements inheritance.
 
-### Modules
+## Modules
 Split code into files, expose only what's needed.
 ```js
 // math.js
@@ -315,10 +312,9 @@ export const add = (a, b) => a + b;
 import { add } from './math.js';
 ```
 
-### Debounce & throttle
-# JavaScript Debounce & Throttle (Simple Explanation)
+## Debounce & throttle
 
-## Why do we need them?
+### Why do we need them?
 
 Some events happen **many times per second**, such as:
 
@@ -333,9 +329,9 @@ If we call an API or perform heavy calculations every time, the app becomes slow
 
 ---
 
-# Debounce
+### Debounce
 
-## What is Debounce?
+#### What is Debounce?
 
 Debounce waits until the user **stops** doing something.
 
@@ -343,7 +339,7 @@ Think:
 
 > **"Wait... if the user keeps typing, don't do anything. Once they stop for 500ms, execute."**
 
-### Example
+#### Example
 
 Search box
 
@@ -372,7 +368,7 @@ The API is called only after the user stops typing.
 
 ---
 
-### Simple Timeline
+#### Simple Timeline
 
 ```
 Typing:
@@ -386,7 +382,7 @@ API Call
 
 ---
 
-### Code
+#### Code
 
 ```javascript
 function debounce(fn, delay) {
@@ -412,9 +408,9 @@ const search = debounce(() => {
 
 ---
 
-# Throttle
+### Throttle
 
-## What is Throttle?
+#### What is Throttle?
 
 Throttle allows the function to run **at most once** every X milliseconds.
 
@@ -424,7 +420,7 @@ Think:
 
 ---
 
-### Example
+#### Example
 
 Scrolling
 
@@ -444,7 +440,7 @@ Runs every 500ms
 
 ---
 
-### Simple Timeline
+#### Simple Timeline
 
 ```
 Scroll Scroll Scroll Scroll Scroll Scroll
@@ -456,7 +452,7 @@ Run                 Run
 
 ---
 
-### Code
+#### Code
 
 ```javascript
 function throttle(fn, delay) {
@@ -486,7 +482,7 @@ const handleScroll = throttle(() => {
 
 ---
 
-# Difference
+### Difference
 
 | Debounce | Throttle |
 |----------|----------|
@@ -496,11 +492,11 @@ const handleScroll = throttle(() => {
 
 ---
 
-# Easy Analogy
+### Easy Analogy
 
 Imagine pressing a doorbell.
 
-### Debounce 🚪
+#### Debounce 🚪
 
 You keep pressing:
 
@@ -512,7 +508,7 @@ The bell rings **only after you stop pressing**.
 
 ---
 
-### Throttle 🚦
+#### Throttle 🚦
 
 Traffic light
 
@@ -522,7 +518,7 @@ It doesn't matter how many cars arrive.
 
 ---
 
-# When to Use
+### When to Use
 
 Use **Debounce** for:
 - Search input
@@ -539,11 +535,11 @@ Use **Throttle** for:
 
 ---
 
-# Interview Answer (30 seconds)
+### Interview Answer (30 seconds)
 
 > Debounce delays execution until the user stops triggering an event for a specified time. It's commonly used for search inputs to avoid unnecessary API calls. Throttle limits a function to run at most once within a specified interval, making it ideal for high-frequency events like scrolling or resizing.
 
-### Currying
+## Currying
 Breaking a multi-argument function into a chain of one-argument functions.
 ```js
 const add = (a) => (b) => (c) => a + b + c;
@@ -551,7 +547,7 @@ add(1)(2)(3); // 6
 const addFive = add(5); // partially filled-in, reusable later
 ```
 
-### Deep copy vs shallow copy
+## Deep copy vs shallow copy
 Shallow copy duplicates the top layer only — nested objects are still shared references. Deep copy duplicates everything, all the way down.
 ```js
 const original = { name: 'A', address: { city: 'Lahore' } };
@@ -564,7 +560,7 @@ deep.address.city = 'Islamabad';
 console.log(original.address.city); // still 'Karachi' — unaffected
 ```
 
-### Memory leaks
+## Memory leaks
 Memory that should be released but isn't, because something is still holding a reference — most often a forgotten timer, event listener, or closure.
 ```js
 function attach() {
@@ -575,7 +571,7 @@ function attach() {
 ```
 **Fix pattern:** always `removeEventListener` / `clearInterval` when a component unmounts.
 
-### ES6+ features (quick reference)
+## ES6+ features (quick reference)
 ```js
 const { name, age = 18 } = person;     // destructuring + default
 const combined = [...arr1, ...arr2];   // spread
@@ -583,7 +579,7 @@ const val = obj?.a?.b ?? 'fallback';   // optional chaining + nullish coalescing
 const greet = (name) => `Hi ${name}!`; // arrow fn + template literal
 ```
 
-### Practice implementing these from scratch (very common interview asks):
+## Practice implementing these from scratch (very common interview asks):
 `Promise.all`, debounce, throttle, deep clone, an event emitter, `map`/`filter`/`reduce`, an LRU cache. Write these without looking anything up — that's the real test.
 
 ---

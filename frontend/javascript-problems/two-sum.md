@@ -52,7 +52,7 @@ Because:
 
 ---
 
-# Brute Force
+## Brute Force
 
 Compare every number with every other number.
 
@@ -75,9 +75,9 @@ Not optimal.
 
 ---
 
-# Optimized Approach (HashMap)
+## Optimized Approach (HashMap)
 
-## Mental Model
+### Mental Model
 
 For every number ask:
 
@@ -91,7 +91,7 @@ complement = target - currentNumber
 
 ---
 
-## Algorithm
+### Algorithm
 
 1. Create a `Map`.
 2. Iterate through the array.
@@ -103,7 +103,7 @@ complement = target - currentNumber
 
 ---
 
-## Why store previous numbers?
+### Why store previous numbers?
 
 When you're at the current number, all previous numbers are already in the map.
 
@@ -152,7 +152,7 @@ Return:
 
 ---
 
-# Map Structure
+### Map Structure
 
 Store:
 
@@ -179,7 +179,7 @@ because we search using the number.
 
 ---
 
-# Complement Formula
+### Complement Formula
 
 Never do
 
@@ -214,7 +214,7 @@ Ask:
 
 ---
 
-# Flow
+### Flow
 
 ```text
 Current Number
@@ -236,7 +236,7 @@ indices     number & index
 
 ---
 
-# Complexity
+### Complexity
 
 Time:
 
@@ -256,7 +256,7 @@ The map may store every element.
 
 ---
 
-# Common Mistakes
+### Common Mistakes
 
 ❌ Wrong complement
 
@@ -292,6 +292,6 @@ Always check what the problem requires.
 
 ---
 
-# Interview One-Liner
+### Interview One-Liner
 
 > "I use a hash map to store previously seen numbers and their indices. For each current number, I calculate its complement (`target - current`) and check whether that complement has already been seen. If it has, I've found the pair; otherwise, I store the current number and continue. This gives an **O(n)** time solution with **O(n)** extra space."

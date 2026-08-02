@@ -20,7 +20,7 @@ const throttle = <T extends (...args: any[]) => void>(fn: T, millisecond: number
 
 ```
 
-### Throttle Implementation Notes
+# Throttle Implementation Notes
 
 * **Purpose:** Limits how often a function can execute within a given time interval.
 

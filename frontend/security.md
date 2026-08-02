@@ -1,6 +1,8 @@
-# CSRF (Cross-Site Request Forgery)
+# Security
 
-## 1. Short explanation (What + Why)
+## CSRF (Cross-Site Request Forgery)
+
+### 1. Short explanation (What + Why)
 
 **What:**
 CSRF is a security attack where an attacker tricks an authenticated user’s browser into sending an unwanted request to a trusted website.
@@ -17,7 +19,7 @@ Example:
 
 ---
 
-## 2. Simple internal working (Senior interview level)
+### 2. Simple internal working (Senior interview level)
 
 1. User logs into an application:
 
@@ -57,9 +59,9 @@ Cookie: sessionId=abc123
 
 ---
 
-## 3. Practical prevention examples
+### 3. Practical prevention examples
 
-### 1. CSRF Token (Most common)
+#### 1. CSRF Token (Most common)
 
 Server generates a random token:
 
@@ -94,7 +96,7 @@ if (csrfToken !== storedToken) {
 
 ---
 
-### 2. SameSite Cookie
+#### 2. SameSite Cookie
 
 Configure cookies:
 
@@ -114,7 +116,7 @@ Options:
 
 ---
 
-### 3. Verify Origin/Referer Header
+#### 3. Verify Origin/Referer Header
 
 Server checks:
 
@@ -130,15 +132,15 @@ Origin: https://attacker.com
 
 ---
 
-## 4. One-line memory trick
+### 4. One-line memory trick
 
 **"CSRF abuses your browser's trust (cookies); prevent it by adding something the attacker cannot know (token)."**
 
 ---
 
-# 5. Senior Interview Questions
+### 5. Senior Interview Questions
 
-### Q1. CSRF vs XSS difference?
+#### Q1. CSRF vs XSS difference?
 
 **Answer:**
 
@@ -150,7 +152,7 @@ Origin: https://attacker.com
 
 ---
 
-### Q2. If we use JWT instead of cookies, do we need CSRF protection?
+#### Q2. If we use JWT instead of cookies, do we need CSRF protection?
 
 **Answer:**
 
@@ -166,7 +168,7 @@ But JWT stored in cookies still requires CSRF protection.
 
 ---
 
-### Q3. Why is SameSite cookie not always enough?
+#### Q3. Why is SameSite cookie not always enough?
 
 **Answer:**
 
@@ -184,7 +186,7 @@ SameSite + CSRF Token + Origin validation
 
 ---
 
-# 6. Common Mistakes
+### 6. Common Mistakes
 
 ❌ Thinking CSRF steals user credentials
 → It performs actions using existing authentication.
@@ -198,14 +200,14 @@ SameSite + CSRF Token + Origin validation
 
 ---
 
-# 7. 30-second Interview Response
+### 7. 30-second Interview Response
 
 "CSRF is an attack where an attacker tricks an authenticated user's browser into making unwanted requests to a trusted application. It happens because browsers automatically attach cookies with requests. We prevent it using CSRF tokens, SameSite cookies, and validating request origin. In modern applications, if authentication tokens are stored in Authorization headers instead of cookies, CSRF risk is significantly reduced."
 
 
-# XSS (Cross-Site Scripting)
+## XSS (Cross-Site Scripting)
 
-## 1. Short explanation (What + Why)
+### 1. Short explanation (What + Why)
 
 **What:**
 XSS is a security vulnerability where an attacker injects malicious JavaScript into a web page that executes in another user's browser.
@@ -226,7 +228,7 @@ Example:
 
 ---
 
-# 2. Simple internal working (Senior interview level)
+### 2. Simple internal working (Senior interview level)
 
 1. Application accepts user input.
 
@@ -253,9 +255,9 @@ Result:
 
 ---
 
-# 3. Types of XSS
+### 3. Types of XSS
 
-### 1. Stored XSS (Most Dangerous)
+#### 1. Stored XSS (Most Dangerous)
 
 Malicious script is stored in the database.
 
@@ -274,7 +276,7 @@ Comment:
 
 ---
 
-### 2. Reflected XSS
+#### 2. Reflected XSS
 
 Script comes from the request and is immediately reflected.
 
@@ -295,7 +297,7 @@ The browser executes it.
 
 ---
 
-### 3. DOM-based XSS
+#### 3. DOM-based XSS
 
 The vulnerability exists entirely in client-side JavaScript.
 
@@ -316,9 +318,9 @@ The script executes.
 
 ---
 
-# 4. Prevention
+### 4. Prevention
 
-### Escape Output
+#### Escape Output
 
 Instead of rendering HTML:
 
@@ -334,7 +336,7 @@ Render:
 
 ---
 
-### Sanitize HTML
+#### Sanitize HTML
 
 If HTML is allowed (rich text):
 
@@ -344,7 +346,7 @@ DOMPurify.sanitize(userInput);
 
 ---
 
-### Avoid `innerHTML`
+#### Avoid `innerHTML`
 
 Bad:
 
@@ -360,7 +362,7 @@ div.textContent = userInput;
 
 ---
 
-### Content Security Policy (CSP)
+#### Content Security Policy (CSP)
 
 Example:
 
@@ -374,7 +376,7 @@ This blocks unauthorized scripts from executing.
 
 ---
 
-### HttpOnly Cookies
+#### HttpOnly Cookies
 
 ```
 Set-Cookie:
@@ -391,15 +393,15 @@ cannot read the cookie.
 
 ---
 
-# 5. One-line memory trick
+### 5. One-line memory trick
 
 **"XSS injects JavaScript into your page; prevent it by escaping, sanitizing, and never trusting user input."**
 
 ---
 
-# 6. Senior Interview Questions
+### 6. Senior Interview Questions
 
-### Q1. Stored vs Reflected vs DOM XSS?
+#### Q1. Stored vs Reflected vs DOM XSS?
 
 **Answer:**
 
@@ -411,7 +413,7 @@ cannot read the cookie.
 
 ---
 
-### Q2. Why is `innerHTML` dangerous?
+#### Q2. Why is `innerHTML` dangerous?
 
 **Answer:**
 
@@ -431,7 +433,7 @@ textContent
 
 ---
 
-### Q3. Does React automatically protect against XSS?
+#### Q3. Does React automatically protect against XSS?
 
 **Answer:**
 
@@ -455,7 +457,7 @@ Always sanitize HTML (e.g., with DOMPurify) before using `dangerouslySetInnerHTM
 
 ---
 
-# 7. Common Mistakes
+### 7. Common Mistakes
 
 ❌ Trusting user input
 
@@ -471,7 +473,7 @@ Always sanitize HTML (e.g., with DOMPurify) before using `dangerouslySetInnerHTM
 
 ---
 
-# 8. 30-second Interview Response
+### 8. 30-second Interview Response
 
 "XSS is a vulnerability where an attacker injects malicious JavaScript that executes in another user's browser. The main types are Stored, Reflected, and DOM-based XSS. It can steal sensitive data, hijack sessions, or manipulate the page. We prevent it by escaping output, sanitizing HTML, avoiding `innerHTML`, using Content Security Policy, and protecting cookies with the HttpOnly flag. Frameworks like React escape content by default, but features like `dangerouslySetInnerHTML` must be used carefully."
 
@@ -485,9 +487,9 @@ Always sanitize HTML (e.g., with DOMPurify) before using `dangerouslySetInnerHTM
 | Goal: Perform actions as the user                     | Goal: Steal data, cookies, tokens, or manipulate the page |
 | Prevent with **CSRF Token, SameSite, Origin check**   | Prevent with **escaping, sanitization, CSP**              |
 
-# OAuth 2.0 (End-to-End)
+## OAuth 2.0 (End-to-End)
 
-## 1. Short explanation (What + Why)
+### 1. Short explanation (What + Why)
 
 **What:**
 OAuth 2.0 is an **authorization framework** that allows users to give an application limited access to their resources **without sharing their password**.
@@ -508,11 +510,11 @@ Example:
 
 ---
 
-# 2. Simple internal working (Senior Interview Level)
+### 2. Simple internal working (Senior Interview Level)
 
-## OAuth 2.0 Authorization Code Flow (Most commonly used)
+#### OAuth 2.0 Authorization Code Flow (Most commonly used)
 
-### Components:
+##### Components:
 
 ```
 User
@@ -526,9 +528,9 @@ Resource Server (Your Backend API)
 
 ---
 
-## End-to-End Flow
+#### End-to-End Flow
 
-### Step 1: User clicks Login
+##### Step 1: User clicks Login
 
 Frontend redirects user:
 
@@ -552,7 +554,7 @@ client_id=my-app
 
 ---
 
-### Step 2: User authenticates
+##### Step 2: User authenticates
 
 Authorization server:
 
@@ -568,7 +570,7 @@ Example:
 
 ---
 
-### Step 3: Authorization Code returned
+##### Step 3: Authorization Code returned
 
 After approval:
 
@@ -585,7 +587,7 @@ The code is short-lived.
 
 ---
 
-### Step 4: Exchange code for tokens
+##### Step 4: Exchange code for tokens
 
 Frontend/backend sends:
 
@@ -611,7 +613,7 @@ Authorization server returns:
 
 ---
 
-### Step 5: Call protected APIs
+##### Step 5: Call protected APIs
 
 Frontend sends:
 
@@ -623,7 +625,7 @@ Authorization: Bearer eyxxxx
 
 ---
 
-### Step 6: Backend validates token
+##### Step 6: Backend validates token
 
 Backend checks:
 
@@ -641,7 +643,7 @@ Access granted
 
 ---
 
-## OAuth Flow Diagram
+#### OAuth Flow Diagram
 
 ```
 User
@@ -673,9 +675,9 @@ Resource Access
 
 ---
 
-# 3. Small practical example/code
+### 3. Small practical example/code
 
-### Frontend redirect
+#### Frontend redirect
 
 ```javascript
 window.location.href =
@@ -687,7 +689,7 @@ window.location.href =
 
 ---
 
-### API Request with token
+#### API Request with token
 
 ```javascript
 fetch("/api/orders", {
@@ -699,7 +701,7 @@ fetch("/api/orders", {
 
 ---
 
-### Backend token validation
+#### Backend token validation
 
 ```javascript
 jwt.verify(
@@ -710,9 +712,9 @@ jwt.verify(
 
 ---
 
-# 4. Important OAuth Concepts
+### 4. Important OAuth Concepts
 
-### Access Token
+#### Access Token
 
 Used to access APIs.
 
@@ -728,7 +730,7 @@ Usually short-lived.
 
 ---
 
-### Refresh Token
+#### Refresh Token
 
 Used to get a new access token.
 
@@ -746,7 +748,7 @@ New Access Token
 
 ---
 
-### Scope
+#### Scope
 
 Defines permissions.
 
@@ -761,27 +763,27 @@ delete:account
 
 ---
 
-### Client ID
+#### Client ID
 
 Public identifier of your application.
 
 ---
 
-### Client Secret
+#### Client Secret
 
 Private credential used by backend applications.
 
 ---
 
-# 5. One-line Memory Trick
+### 5. One-line Memory Trick
 
 **"OAuth = Give limited access using tokens, without sharing passwords."**
 
 ---
 
-# 6. 3 Important Senior Interview Questions
+### 6. 3 Important Senior Interview Questions
 
-## Q1. OAuth 2.0 vs JWT?
+#### Q1. OAuth 2.0 vs JWT?
 
 **Answer:**
 
@@ -794,7 +796,7 @@ OAuth can use JWT access tokens, but they are not the same.
 
 ---
 
-## Q2. Why use Authorization Code Flow instead of Implicit Flow?
+#### Q2. Why use Authorization Code Flow instead of Implicit Flow?
 
 **Answer:**
 
@@ -808,7 +810,7 @@ Implicit Flow is deprecated for most modern applications.
 
 ---
 
-## Q3. Where should access and refresh tokens be stored?
+#### Q3. Where should access and refresh tokens be stored?
 
 **Answer:**
 
@@ -821,7 +823,7 @@ Avoid storing sensitive tokens in localStorage because XSS can steal them.
 
 ---
 
-# 7. Common Mistakes
+### 7. Common Mistakes
 
 ❌ Thinking OAuth is authentication only
 → OAuth provides authorization; OIDC handles authentication.
@@ -838,6 +840,41 @@ Avoid storing sensitive tokens in localStorage because XSS can steal them.
 
 ---
 
-# 8. 30-Second Interview Response
+### 8. 30-Second Interview Response
 
 > "OAuth 2.0 is an authorization framework that allows applications to access user resources without sharing passwords. The most common flow is Authorization Code Flow, where the user authenticates with the authorization server, receives a temporary code, and exchanges it for access and refresh tokens. The frontend uses the access token to call protected APIs, and the backend validates the token before granting access. In production systems, I prefer short-lived access tokens, secure refresh tokens, proper scopes, and token validation."
+
+---
+
+## Security Quick Reference
+
+*(Condensed overview — see the detailed topics above for full explanations.)*
+
+### XSS (Cross-Site Scripting)
+Attacker sneaks JS into your page, usually through unescaped user input, and it runs in *other* users' browsers.
+```jsx
+<div dangerouslySetInnerHTML={{ __html: userComment }} /> // ❌ if userComment = "<img src=x onerror=alert('hacked')>"
+<div>{userComment}</div> // ✅ React escapes this automatically
+```
+
+### CSRF (Cross-Site Request Forgery)
+Tricks a *logged-in* user's browser into firing a request they didn't intend (e.g., a hidden auto-submitting form on a malicious site that hits your bank's transfer endpoint, using the victim's existing cookies).
+**Defense:** CSRF tokens + `SameSite` cookies.
+
+### CSP (Content Security Policy)
+A response header that whitelists where scripts/styles/images are allowed to load from, so even if an attacker injects a `<script src="evil.com">`, the browser refuses to run it.
+```
+Content-Security-Policy: script-src 'self' https://trusted-cdn.com;
+```
+
+### OAuth
+Lets a user grant App A access to their data on App B ("Sign in with Google") without ever handing App A their Google password.
+
+### JWT (JSON Web Token)
+A signed token (`header.payload.signature`) carrying user identity — the server can verify it wasn't tampered with, without a database lookup, enabling stateless auth.
+
+### SameSite cookies
+```
+Set-Cookie: session=abc123; SameSite=Strict
+```
+`Strict`/`Lax` stop the cookie from being sent on cross-site requests — a direct defense against CSRF.

@@ -20,7 +20,7 @@ Examples:
 
 ---
 
-# 2. Simple internal working (Senior Interview Level)
+## 2. Simple internal working (Senior Interview Level)
 
 ### Flow
 
@@ -72,7 +72,7 @@ GET /products?page=3
 
 ---
 
-# 3. Small practical example/code
+## 3. Small practical example/code
 
 ### Using Intersection Observer (Recommended)
 
@@ -108,7 +108,7 @@ const {
 
 Here's a **simple React example** that demonstrates how `IntersectionObserver` works for infinite scrolling.
 
-## Step 1: Component
+### Step 1: Component
 
 ```tsx
 import { useEffect, useRef, useState } from "react";
@@ -182,7 +182,7 @@ export default function App() {
 
 ---
 
-# How it works
+## How it works
 
 ### Initial Render
 
@@ -328,7 +328,7 @@ This repeats until your API indicates there are no more pages.
 
 ---
 
-# Visual Flow
+## Visual Flow
 
 ```text
 Render
@@ -358,7 +358,7 @@ React Re-render
 Loading div moves down
 ```
 
-## Senior Interview Tip ⭐
+### Senior Interview Tip ⭐
 
 In production, you should avoid calling `fetchMore()` repeatedly while a request is already in progress:
 
@@ -373,13 +373,13 @@ This prevents duplicate API requests and is the pattern interviewers expect for 
 
 ---
 
-# 4. One-line memory trick
+## 4. One-line memory trick
 
 **"Infinite Scroll = Detect bottom → Fetch next page → Append data."**
 
 ---
 
-# 5. 3 Important Senior Interview Questions
+## 5. 3 Important Senior Interview Questions
 
 ### Q1. Why use `IntersectionObserver` instead of the scroll event?
 
@@ -429,7 +429,7 @@ Solutions:
 
 ---
 
-# 6. Common mistakes
+## 6. Common mistakes
 
 ❌ Using the `scroll` event without throttling
 
@@ -443,6 +443,6 @@ Solutions:
 
 ---
 
-# 7. 30-second interview response
+## 7. 30-second interview response
 
 > "Infinite scroll automatically loads more data as the user reaches the end of the current list. In modern React applications, I prefer using `IntersectionObserver` instead of scroll events because it's more efficient. The backend returns paginated or cursor-based data, and the frontend appends new items while preventing duplicate requests with loading flags. For large datasets, I combine infinite scroll with virtualization to keep rendering performant."

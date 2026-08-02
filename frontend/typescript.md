@@ -1,6 +1,8 @@
-# TypeScript Generics
+# TypeScript
 
-## What is it?
+## TypeScript Generics
+
+### What is it?
 
 Generics allow you to write **reusable, type-safe code** without fixing the type in advance.
 
@@ -8,7 +10,7 @@ Instead of writing separate functions for `string`, `number`, etc., you write on
 
 ---
 
-## How does it work?
+### How does it work?
 
 Without Generics:
 
@@ -36,7 +38,7 @@ getValue(true);    // boolean
 
 ---
 
-## Generic Interface
+### Generic Interface
 
 ```ts
 interface ApiResponse<T> {
@@ -52,7 +54,7 @@ const user: ApiResponse<User> = {
 
 ---
 
-## Generic Array
+### Generic Array
 
 ```ts
 const numbers: Array<number> = [1, 2, 3];
@@ -63,27 +65,27 @@ const numbers: number[] = [1, 2, 3];
 
 ---
 
-## Memory Trick
+### Memory Trick
 
 > **Generics = Write once, work with any type.**
 
 ---
 
-## Senior Interview Questions
+### Senior Interview Questions
 
-### Q1: Why use Generics?
+#### Q1: Why use Generics?
 
 To write reusable functions, classes, and interfaces while maintaining type safety.
 
 ---
 
-### Q2: What does `<T>` mean?
+#### Q2: What does `<T>` mean?
 
 `T` is a **type parameter** (placeholder). It represents any type and is replaced when the function or class is used.
 
 ---
 
-### Q3: Can a Generic have constraints?
+#### Q3: Can a Generic have constraints?
 
 Yes.
 
@@ -97,7 +99,7 @@ Only types with a `length` property are allowed.
 
 ---
 
-### Q4: Can Generics have multiple type parameters?
+#### Q4: Can Generics have multiple type parameters?
 
 Yes.
 
@@ -111,7 +113,7 @@ pair("Ali", 25);
 
 ---
 
-## Common Mistakes
+### Common Mistakes
 
 ❌ Using `any` instead of Generics.
 
@@ -129,14 +131,14 @@ function getValue<T>(value: T): T {}
 
 ---
 
-## Interview Answer (30 sec)
+### Interview Answer (30 sec)
 
 > Generics allow us to write reusable, type-safe code without knowing the exact type in advance. We define a type parameter, such as `<T>`, and TypeScript infers the actual type when the function, class, or interface is used. This avoids code duplication while preserving strong type checking.
 
 
-# Utility Types (TypeScript)
+## Utility Types (TypeScript)
 
-## 1. Short explanation (What + Why)
+### 1. Short explanation (What + Why)
 
 **What:**
 Utility Types are built-in TypeScript types that transform existing types (e.g., make properties optional, readonly, required, etc.).
@@ -146,7 +148,7 @@ They reduce code duplication and help create reusable, maintainable type definit
 
 ---
 
-## 2. Simple internal working (Senior interview level)
+### 2. Simple internal working (Senior interview level)
 
 Utility Types use **TypeScript generics + mapped types + conditional types** to transform an existing type at compile time.
 
@@ -169,7 +171,7 @@ type Partial<T> = {
 
 ---
 
-## 3. Common Utility Types
+### 3. Common Utility Types
 
 ```ts
 interface User {
@@ -179,38 +181,38 @@ interface User {
 }
 ```
 
-### `Partial<T>` → All optional
+#### `Partial<T>` → All optional
 
 ```ts
 type UpdateUser = Partial<User>;
 ```
 
-### `Required<T>` → All required
+#### `Required<T>` → All required
 
 ```ts
 type FullUser = Required<User>;
 ```
 
-### `Readonly<T>` → Cannot modify
+#### `Readonly<T>` → Cannot modify
 
 ```ts
 const user: Readonly<User> = { id: 1, name: "John" };
 // user.name = "Mike"; ❌
 ```
 
-### `Pick<T, K>` → Select properties
+#### `Pick<T, K>` → Select properties
 
 ```ts
 type UserBasic = Pick<User, "id" | "name">;
 ```
 
-### `Omit<T, K>` → Remove properties
+#### `Omit<T, K>` → Remove properties
 
 ```ts
 type UserWithoutAge = Omit<User, "age">;
 ```
 
-### `Record<K, T>` → Key-value object
+#### `Record<K, T>` → Key-value object
 
 ```ts
 type Users = Record<string, User>;
@@ -218,15 +220,15 @@ type Users = Record<string, User>;
 
 ---
 
-## 4. One-line memory trick
+### 4. One-line memory trick
 
 **"Utility Types transform existing types without rewriting them."**
 
 ---
 
-# 5. Senior Interview Questions
+### 5. Senior Interview Questions
 
-### Q1. `Pick` vs `Omit`?
+#### Q1. `Pick` vs `Omit`?
 
 **Answer:**
 
@@ -235,21 +237,21 @@ type Users = Record<string, User>;
 
 ---
 
-### Q2. When do you use `Partial`?
+#### Q2. When do you use `Partial`?
 
 **Answer:**
 For update APIs, forms, or PATCH requests where only some fields are sent.
 
 ---
 
-### Q3. Is `Readonly` runtime protection?
+#### Q3. Is `Readonly` runtime protection?
 
 **Answer:**
 No. It's **compile-time only**; JavaScript can still mutate the object unless it's frozen.
 
 ---
 
-## 6. Common mistakes
+### 6. Common mistakes
 
 ❌ Assuming Utility Types affect runtime.
 
@@ -259,14 +261,14 @@ No. It's **compile-time only**; JavaScript can still mutate the object unless it
 
 ---
 
-# 7. 30-second interview response
+### 7. 30-second interview response
 
 "Utility Types are built-in TypeScript helpers that transform existing types without rewriting them. Common ones include `Partial`, `Required`, `Readonly`, `Pick`, `Omit`, and `Record`. They are implemented using generics and mapped types, improve code reusability, and provide compile-time type safety without affecting runtime behavior."
 
 
-# Mapped Types (TypeScript)
+## Mapped Types (TypeScript)
 
-## 1. Short explanation (What + Why)
+### 1. Short explanation (What + Why)
 
 **What:**
 Mapped Types let you create a new type by **iterating over the properties of an existing type** and transforming them.
@@ -276,7 +278,7 @@ They reduce code duplication and allow reusable type transformations (e.g., maki
 
 ---
 
-## 2. Simple internal working (Senior interview level)
+### 2. Simple internal working (Senior interview level)
 
 Internally, TypeScript:
 
@@ -313,9 +315,9 @@ type OptionalUser = {
 
 ---
 
-## 3. Small practical example/code
+### 3. Small practical example/code
 
-### Example 1: Make every property readonly
+#### Example 1: Make every property readonly
 
 ```ts
 interface User {
@@ -330,7 +332,7 @@ type ReadonlyUser = {
 
 ---
 
-### Example 2: Make every property nullable
+#### Example 2: Make every property nullable
 
 ```ts
 type Nullable<T> = {
@@ -351,7 +353,7 @@ Result:
 
 ---
 
-### Example 3: Key Remapping (TS 4.1+)
+#### Example 3: Key Remapping (TS 4.1+)
 
 ```ts
 type Getters<T> = {
@@ -370,15 +372,15 @@ Result:
 
 ---
 
-## 4. One-line memory trick
+### 4. One-line memory trick
 
 **"Mapped Types = `for...of` loop for TypeScript object properties."**
 
 ---
 
-## 5. 3 important senior interview questions
+### 5. 3 important senior interview questions
 
-### Q1. How are Utility Types related to Mapped Types?
+#### Q1. How are Utility Types related to Mapped Types?
 
 **Answer:**
 
@@ -386,7 +388,7 @@ Most built-in Utility Types (`Partial`, `Readonly`, `Required`, `Pick`) are impl
 
 ---
 
-### Q2. What's the difference between Mapped Types and Index Signatures?
+#### Q2. What's the difference between Mapped Types and Index Signatures?
 
 **Answer:**
 
@@ -407,7 +409,7 @@ type T = {
 
 ---
 
-### Q3. What is key remapping?
+#### Q3. What is key remapping?
 
 **Answer:**
 
@@ -423,7 +425,7 @@ type Prefix<T> = {
 
 ---
 
-## 6. Common mistakes
+### 6. Common mistakes
 
 * ❌ Confusing **Mapped Types** with **Index Signatures**.
 * ❌ Forgetting `keyof` when iterating over properties.
@@ -432,13 +434,13 @@ type Prefix<T> = {
 
 ---
 
-## 7. 30-second interview response
+### 7. 30-second interview response
 
 > "Mapped Types allow us to create new types by iterating over the keys of an existing type using `[K in keyof T]`. They're used to transform properties—for example, making them optional, readonly, nullable, or even renaming them with key remapping. Most built-in utility types like `Partial`, `Readonly`, and `Required` are implemented using mapped types. They improve code reuse and maintainability while providing compile-time type safety."
 
-# Conditional Types (TypeScript)
+## Conditional Types (TypeScript)
 
-## 1. Short explanation (What + Why)
+### 1. Short explanation (What + Why)
 
 **What:**
 Conditional Types let you choose one type or another based on a condition.
@@ -456,7 +458,7 @@ Read as: **"If `T` extends `U`, use `X`; otherwise use `Y`."**
 
 ---
 
-## 2. Simple internal working (Senior interview level)
+### 2. Simple internal working (Senior interview level)
 
 TypeScript evaluates the condition **at compile time**:
 
@@ -481,9 +483,9 @@ type B = IsString<number>; // false
 
 ---
 
-## 3. Small practical example/code
+### 3. Small practical example/code
 
-### Example 1: Basic Conditional Type
+#### Example 1: Basic Conditional Type
 
 ```ts
 type IsNumber<T> = T extends number ? "Yes" : "No";
@@ -494,7 +496,7 @@ type B = IsNumber<boolean>; // "No"
 
 ---
 
-### Example 2: Using `infer`
+#### Example 2: Using `infer`
 
 Extract the return type of a function:
 
@@ -510,7 +512,7 @@ type Result = MyReturnType<Fn>; // string
 
 ---
 
-### Example 3: Distributive Conditional Types
+#### Example 3: Distributive Conditional Types
 
 ```ts
 type ToArray<T> = T extends any ? T[] : never;
@@ -528,15 +530,15 @@ TypeScript applies the condition to each member of the union individually.
 
 ---
 
-## 4. One-line memory trick
+### 4. One-line memory trick
 
 **"Conditional Types = if-else statements for TypeScript types."**
 
 ---
 
-## 5. 3 important senior interview questions
+### 5. 3 important senior interview questions
 
-### Q1. What is the syntax of a Conditional Type?
+#### Q1. What is the syntax of a Conditional Type?
 
 **Answer:**
 
@@ -548,7 +550,7 @@ If `T` satisfies `U`, TypeScript returns `X`; otherwise, it returns `Y`.
 
 ---
 
-### Q2. What is `infer`?
+#### Q2. What is `infer`?
 
 **Answer:**
 
@@ -564,7 +566,7 @@ It's commonly used in utility types like `ReturnType` and `Parameters`.
 
 ---
 
-### Q3. What are distributive conditional types?
+#### Q3. What are distributive conditional types?
 
 **Answer:**
 
@@ -578,7 +580,7 @@ type Result = T<string | number>; // "S" | "N"
 
 ---
 
-## 6. Common mistakes
+### 6. Common mistakes
 
 * ❌ Confusing Conditional Types with runtime `if` statements.
 * ❌ Forgetting that they are **compile-time only**.
@@ -587,14 +589,14 @@ type Result = T<string | number>; // "S" | "N"
 
 ---
 
-## 7. 30-second interview response
+### 7. 30-second interview response
 
 > "Conditional Types let us create types that change based on a condition using the syntax `T extends U ? X : Y`. They work like compile-time if-else statements and are widely used to build reusable utility types. Combined with `infer`, they can extract types such as function return types or parameter types. Many built-in utility types, including `ReturnType` and `Exclude`, are implemented using conditional types.`
 
 
 That's a good point. For interview prep, I shouldn't assume you already know related concepts. Here's a better version that explains the differences briefly.
 
-# Interface vs Type (TypeScript)
+## Interface vs Type (TypeScript)
 
 | **Interface**                                             | **Type**                                                                                                       |
 | --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
@@ -680,3 +682,72 @@ Doing the same with `type` gives an error.
 * **Type = Everything (objects + advanced types)**
 
 This style is much better for interviews because it introduces every concept briefly instead of assuming you already know terms like **union**, **tuple**, or **declaration merging**.
+
+---
+
+## TypeScript Quick Reference
+
+*(Condensed overview — see the detailed topics above for full explanations.)*
+
+### Generics
+A placeholder for a type, so one function/component works safely with many types.
+```ts
+function firstItem<T>(arr: T[]): T { return arr[0]; }
+firstItem<number>([1, 2, 3]);   // T = number
+firstItem<string>(['a', 'b']);  // T = string
+```
+**Analogy:** Generics are like a labeled box — you decide what goes inside (`T`) when you use it, not when you build the box.
+
+### Utility types
+Built-in transformers for existing types instead of writing new ones by hand.
+```ts
+interface User { id: number; name: string; email: string; }
+type UserPreview = Pick<User, 'id' | 'name'>;   // only id + name
+type OptionalUser = Partial<User>;              // all fields optional
+type NoEmail = Omit<User, 'email'>;              // everything except email
+```
+
+### Mapped types
+The mechanism *behind* utility types — looping over a type's keys to build a new type.
+```ts
+type ReadonlyUser = { readonly [K in keyof User]: User[K] };
+```
+
+### Conditional types & `infer`
+Types that branch based on a condition; `infer` lets you "capture" a type you don't know yet.
+```ts
+type IsString<T> = T extends string ? true : false;
+type A = IsString<'hi'>; // true
+
+type ReturnOf<T> = T extends (...args: any[]) => infer R ? R : never;
+type R1 = ReturnOf<() => number>; // number
+```
+
+### `keyof`
+Gives you a union of an object type's property names — useful for type-safe property access.
+```ts
+type UserKeys = keyof User; // 'id' | 'name' | 'email'
+function getProp<T, K extends keyof T>(obj: T, key: K) { return obj[key]; } // key must be a real property
+```
+
+### Discriminated unions & type narrowing
+A union where every variant shares one common "tag" field, so TypeScript can figure out exactly which shape you have.
+```ts
+type Shape =
+  | { kind: 'circle'; radius: number }
+  | { kind: 'square'; side: number };
+
+function area(s: Shape) {
+  if (s.kind === 'circle') return Math.PI * s.radius ** 2; // TS knows `radius` exists here
+  return s.side ** 2; // TS knows it's the square variant here
+}
+```
+
+### Interfaces vs types
+Both describe object shapes. `interface` can be re-opened and merged later; `type` is more flexible (can represent unions, tuples, primitives) but is closed once declared.
+```ts
+interface Animal { name: string }
+interface Animal { age: number } // ✅ merges automatically into one interface
+
+type Point = { x: number } | [number, number]; // ✅ type can do unions, interface can't
+```

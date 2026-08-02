@@ -18,7 +18,7 @@ Instead of waiting one by one, run all together.
 
 ---
 
-# 2. Simple internal working (Senior Interview Level)
+## 2. Simple internal working (Senior Interview Level)
 
 Without `Promise.all()` (Sequential)
 
@@ -50,7 +50,7 @@ Total ≈ 2 seconds
 
 ---
 
-# 3. Small practical example/code
+## 3. Small practical example/code
 
 ### Basic Usage
 
@@ -86,7 +86,7 @@ All three API calls start **at the same time**.
 
 ---
 
-# 4. How to Implement `Promise.all()`
+## 4. How to Implement `Promise.all()`
 
 ```javascript
 function myPromiseAll(promises) {
@@ -167,13 +167,13 @@ const myPromiseAll = (promises: Promise<any>[]) => {
 
 ---
 
-# 5. One-line memory trick
+## 5. One-line memory trick
 
 **"Promise.all() = Run together, succeed together, fail fast."**
 
 ---
 
-# 6. 3 Important Senior Interview Questions
+## 6. 3 Important Senior Interview Questions
 
 ### Q1. Does `Promise.all()` execute promises sequentially?
 
@@ -225,7 +225,7 @@ Promise.all([A, B, C])
 
 ---
 
-# 7. Common mistakes
+## 7. Common mistakes
 
 ❌ Thinking promises execute one after another.
 
@@ -237,6 +237,6 @@ Promise.all([A, B, C])
 
 ---
 
-# 8. 30-second interview response
+## 8. 30-second interview response
 
 > "Promise.all() runs multiple asynchronous operations concurrently and returns a single promise that resolves when all of them succeed. It preserves the input order of results regardless of completion order and rejects immediately if any promise fails. Internally, it tracks completed promises, stores results by index, and resolves once all have completed. It's ideal for independent API calls that can execute in parallel to improve performance."
