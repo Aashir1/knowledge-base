@@ -25,5 +25,6 @@
   - [SQL Syllabus](BE/SQL/topics.md)
   - [Query Fundamentals](BE/SQL/Query%20Fundamentals.md)
   - [Joins](BE/SQL/Joins.md)
+  - [Aggregation](BE/SQL/Aggregation.md)
 
 - [Topics Format Guide](topics-format.md)
