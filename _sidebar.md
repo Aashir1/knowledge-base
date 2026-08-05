@@ -26,5 +26,6 @@
   - [Query Fundamentals](BE/SQL/Query%20Fundamentals.md)
   - [Joins](BE/SQL/Joins.md)
   - [Aggregation](BE/SQL/Aggregation.md)
+  - [Advance Queries](BE/SQL/Advance%20Queries.md)
 
 - [Topics Format Guide](topics-format.md)
