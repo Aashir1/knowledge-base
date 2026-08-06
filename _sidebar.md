@@ -28,5 +28,6 @@
   - [Aggregation](BE/SQL/Aggregation.md)
   - [Advance Queries](BE/SQL/Advance%20Queries.md)
   - [Database Design Relationships](BE/SQL/Database%20Design%20Relationships.md)
+  - [Performance](BE/SQL/Performance.md)
 
 - [Topics Format Guide](topics-format.md)
