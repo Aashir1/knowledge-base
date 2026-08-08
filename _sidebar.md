@@ -29,5 +29,6 @@
   - [Advance Queries](BE/SQL/Advance%20Queries.md)
   - [Database Design Relationships](BE/SQL/Database%20Design%20Relationships.md)
   - [Performance](BE/SQL/Performance.md)
+  - [Query Optimization Basic](BE/SQL/Query%20Optimization%20Basic.md)
 
 - [Topics Format Guide](topics-format.md)
