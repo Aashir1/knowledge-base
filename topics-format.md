@@ -56,5 +56,3 @@ Write a polished answer that I can speak naturally during an interview.
 - Highlight important keywords in **bold**.
 - Do not include unnecessary history or theory.
 - Assume I already know basic programming.
-
-My first topic is:

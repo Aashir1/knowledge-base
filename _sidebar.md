@@ -22,6 +22,8 @@
   - [Concept: bind()](frontend/implementations/concept-bind.html)
 
 - **Backend**
+  - [Topics Overview](BE/topics.md)
+  - [Node.js Runtime](BE/Nodejs%20Runtime.md)
   - [SQL Syllabus](BE/SQL/topics.md)
   - [Query Fundamentals](BE/SQL/Query%20Fundamentals.md)
   - [Joins](BE/SQL/Joins.md)
