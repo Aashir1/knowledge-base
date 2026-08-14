@@ -25,6 +25,7 @@
   - [Topics Overview](BE/topics.md)
   - [Node.js Runtime](BE/Nodejs%20Runtime.md)
   - [REST API Design](BE/REST%20API%20Design.md)
+  - [Authentication and Authorization](BE/Authentication%20and%20Authorization.md)
   - [SQL Syllabus](BE/SQL/topics.md)
   - [Query Fundamentals](BE/SQL/Query%20Fundamentals.md)
   - [Joins](BE/SQL/Joins.md)
