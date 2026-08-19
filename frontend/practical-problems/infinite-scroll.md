@@ -117,28 +117,19 @@ export default function App() {
   const [items, setItems] = useState([1, 2, 3, 4, 5]);
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
-  // Simulate API call
   const fetchMore = () => {
-    console.log("Fetching next page...");
-
     setItems((prev) => {
-      const last = prev[prev.length - 1];
-
-      return [
-        ...prev,
-        last + 1,
-        last + 2,
-        last + 3,
-        last + 4,
-        last + 5,
-      ];
+      const last = prev.length;
+      const nextPage = [];
+      for (let i = last + 1; i <= last + 5; i++) {
+        nextPage.push(i);
+      }
+      return [...prev, ...nextPage];
     });
   };
 
   useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      const entry = entries[0];
-
+    const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
         fetchMore();
       }
@@ -152,33 +143,20 @@ export default function App() {
   }, []);
 
   return (
-    <div>
-      {items.map((item) => (
-        <div
-          key={item}
-          style={{
-            height: "100px",
-            border: "1px solid gray",
-            marginBottom: "10px",
-          }}
-        >
-          Product {item}
-        </div>
-      ))}
+    <div style={{ maxHeight: "5rem", overflowY: "scroll", border: "1px solid black" }}>
+      <ul>
+        {items.map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ul>
 
-      <div
-        ref={loaderRef}
-        style={{
-          textAlign: "center",
-          padding: "20px",
-        }}
-      >
-        Loading...
-      </div>
+      <div ref={loaderRef}>Loading...</div>
     </div>
   );
 }
 ```
+
+Notice the scrollable container is the `<div>` itself (`maxHeight` + `overflowY: scroll`), not the page. That makes this version self-contained — drop it into a sandbox and it works immediately, without needing enough page content to make the whole document scroll. `IntersectionObserver` still detects visibility correctly here without an explicit `root` option, because the browser clips the target's visible area against every scrollable ancestor, not just the page viewport.
 
 ---
 
@@ -187,11 +165,11 @@ export default function App() {
 ### Initial Render
 
 ```text
-Product 1
-Product 2
-Product 3
-Product 4
-Product 5
+1
+2
+3
+4
+5
 
 Loading...  <-- loaderRef
 ```
@@ -228,14 +206,14 @@ Now the browser starts watching only this element:
 
 ### User scrolls
 
-Initially:
+Initially, inside the scrollable container:
 
 ```text
-Viewport
+Container (maxHeight: 5rem, overflowY: scroll)
 
-Product 1
-Product 2
-Product 3
+1
+2
+3
 
 Loading... ❌ Not Visible
 ```
@@ -244,13 +222,13 @@ Nothing happens.
 
 ---
 
-After scrolling:
+After scrolling the container down:
 
 ```text
-Viewport
+Container (maxHeight: 5rem, overflowY: scroll)
 
-Product 4
-Product 5
+4
+5
 
 Loading... ✅ Visible
 ```
@@ -258,10 +236,8 @@ Loading... ✅ Visible
 Browser automatically executes:
 
 ```tsx
-(entries) => {
-   const entry = entries[0];
-
-   if(entry.isIntersecting){
+([entry]) => {
+   if (entry.isIntersecting) {
        fetchMore();
    }
 }
@@ -278,7 +254,7 @@ true
 ### `fetchMore()` executes
 
 ```tsx
-setItems(prev => [...prev, 6,7,8,9,10]);
+setItems(prev => [...prev, 6, 7, 8, 9, 10]);
 ```
 
 Now React re-renders.
@@ -286,15 +262,15 @@ Now React re-renders.
 UI becomes
 
 ```text
-Product 1
-Product 2
+1
+2
 ...
-Product 10
+10
 
 Loading...
 ```
 
-Notice that **Loading... moved down automatically** because more products were added above it.
+Notice that **Loading... moved down automatically** because more items were added above it.
 
 ---
 
@@ -317,9 +293,9 @@ fetchMore();
 Now:
 
 ```text
-Product 1
+1
 ...
-Product 15
+15
 
 Loading...
 ```
