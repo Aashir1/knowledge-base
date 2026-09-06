@@ -37,4 +37,9 @@
     - [Performance](BE/SQL/Performance.md)
     - [Query Optimization Basic](BE/SQL/Query%20Optimization%20Basic.md)
 
+- **System Design**
+  - [Basics](System%20Design/Basics.md)
+  - [Availability](System%20Design/Availibility.md)
+  - [Database Design](System%20Design/Database%20Design.md)
+
 - [Topics Format Guide](topics-format.md)
