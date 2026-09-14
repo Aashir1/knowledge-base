@@ -7,6 +7,7 @@
   - **React**
     - [ReactJs / NextJs](frontend/React/react-nextjs.md)
     - [useTransition](frontend/React/useTransition.md)
+    - [useDeferredValue](frontend/React/useDefferedValue.md)
   - [Security](frontend/security.md)
   - [Problem Solving](frontend/problem-solving.md)
   - [System Design](frontend/system-design.md)
