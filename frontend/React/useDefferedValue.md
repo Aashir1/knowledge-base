@@ -494,3 +494,12 @@ expensive UI
 ## 🎯 30-second senior interview answer
 
 > **`useDeferredValue` is useful when a value drives expensive rendering and I don't want that rendering to block urgent user interactions. It gives React permission to let the deferred value temporarily lag behind the latest value, allowing things like typing or clicking to remain responsive. It's different from debounce because there's no fixed time delay, and it's different from `useTransition` because `useTransition` marks a state update as non-urgent, while `useDeferredValue` creates a deferred version of an existing value.**
+
+
+# Key Differences at a Glance
+
+| Feature | `useTransition` | `useDeferredValue` |
+| :--- | :--- | :--- |
+| **What it wraps** | A function (e.g., `startTransition(() => setValue(x))`) | A value (e.g., `const deferredValue = useDeferredValue(value)`) |
+| **Best Used For** | User actions like clicking tabs or submitting forms | Heavy filtering or searching through lists via props |
+| **Loading State** | Gives you an `isPending` boolean flag | No built-in flag (you must compare old vs. new value) |
