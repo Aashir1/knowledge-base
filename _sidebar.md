@@ -46,5 +46,6 @@
   - [Database Design](System%20Design/3.%20Database%20Design.md)
   - [Caching, CDN & Asynchronous Systems](System%20Design/4.%20Caching,%20CDN%20&%20Asynchronous%20Systems.md)
   - [Design Notification System](System%20Design/5.%20Design%20Notification%20System.md)
+  - [Rate Limit](System%20Design/6.%20Rate%20Limit.md)
 
 - [Topics Format Guide](topics-format.md)
