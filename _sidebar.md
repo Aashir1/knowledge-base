@@ -47,5 +47,6 @@
   - [Caching, CDN & Asynchronous Systems](System%20Design/4.%20Caching,%20CDN%20&%20Asynchronous%20Systems.md)
   - [Design Notification System](System%20Design/5.%20Design%20Notification%20System.md)
   - [Rate Limit](System%20Design/6.%20Rate%20Limit.md)
+  - [Distributed System Essentials](System%20Design/7.%20Distributed%20System%20Essentials.md)
 
 - [Topics Format Guide](topics-format.md)
