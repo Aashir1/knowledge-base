@@ -2,9 +2,13 @@
 
 - **Frontend**
   - [Topics Overview](frontend/topics.md)
+  - [Preparation Guide](frontend/preparation-guide.md)
   - [JavaScript](frontend/javascript.md)
   - [TypeScript](frontend/typescript.md)
   - **React**
+    - [React Core](frontend/React/1.%20React%20Core.md)
+    - [Hooks](frontend/React/2.%20Hooks.md)
+    - [React Performance](frontend/React/3.%20React%20Performance.md)
     - [ReactJs / NextJs](frontend/React/react-nextjs.md)
     - [useTransition](frontend/React/useTransition.md)
     - [useDeferredValue](frontend/React/useDefferedValue.md)
