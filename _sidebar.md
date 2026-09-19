@@ -52,5 +52,6 @@
   - [Design Notification System](System%20Design/5.%20Design%20Notification%20System.md)
   - [Rate Limit](System%20Design/6.%20Rate%20Limit.md)
   - [Distributed System Essentials](System%20Design/7.%20Distributed%20System%20Essentials.md)
+  - [Networking](System%20Design/8.%20Networking.md)
 
 - [Topics Format Guide](topics-format.md)
