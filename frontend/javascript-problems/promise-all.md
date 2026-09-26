@@ -143,22 +143,18 @@ const myPromiseAll = (promises: Promise<any>[]) => {
 
         for (const [index, promise] of promises.entries()) {
 
-            let individualResponse = undefined;
             promise
                 .then(res => {
-                    individualResponse = res;
+                    // store first, then count — checking `res !== undefined` here
+                    // would hang forever if a promise legitimately resolves to undefined
+                    responses[index] = res;
                     promiseExecutionCount++;
+
+                    if (promiseExecutionCount === promises.length) {
+                        resolve(responses);
+                    }
                 })
                 .catch(err => reject(err))
-                .finally(() => {
-                    if (individualResponse !== undefined) {
-                        responses[index] = individualResponse;
-                        if (promiseExecutionCount === promises.length) {
-                            return resolve(responses);
-                        }
-                    }
-
-                })
         }
     })
 }

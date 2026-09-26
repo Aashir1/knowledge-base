@@ -14,7 +14,7 @@ const twoSum = <T extends number[]>(arr: T, sum) => {
         if (ele === undefined) {
             map.set(item, index);
         } else {
-            return [item, ele.getValue()]
+            return [ele, index]
         }
     }
 }

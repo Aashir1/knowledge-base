@@ -141,7 +141,7 @@ const App = () => {
     let timer = null;
 
     return (...args) => {
-      if(timer) clearInterval(timer);
+      if(timer) clearTimeout(timer);
       timer = setTimeout(() => fn(...args), seconds)
     }
   }
