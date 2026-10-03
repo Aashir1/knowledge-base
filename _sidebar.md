@@ -12,6 +12,8 @@
     - [React Rendering Deep Dive](frontend/React/4.%20React%20Rendering%20Deep%20Dive.md)
     - [State Management](frontend/React/5.%20State%20Management.md)
     - [Data Fetching](frontend/React/6.%20Data%20Fetching.md)
+    - [React Architecture](frontend/React/7.%20React%20Architecture.md)
+    - [Next and SSR Architecture](frontend/React/8.%20Next%20and%20SSR%20Architecture.md)
     - [ReactJs / NextJs](frontend/React/react-nextjs.md)
     - [useTransition](frontend/React/useTransition.md)
     - [useDeferredValue](frontend/React/useDefferedValue.md)
@@ -56,5 +58,6 @@
   - [Rate Limit](System%20Design/6.%20Rate%20Limit.md)
   - [Distributed System Essentials](System%20Design/7.%20Distributed%20System%20Essentials.md)
   - [Networking](System%20Design/8.%20Networking.md)
+  - [Storage And Large Data](System%20Design/9.%20Storate%20And%20Largedata.md)
 
 - [Topics Format Guide](topics-format.md)
