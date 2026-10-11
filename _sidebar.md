@@ -59,5 +59,6 @@
   - [Distributed System Essentials](System%20Design/7.%20Distributed%20System%20Essentials.md)
   - [Networking](System%20Design/8.%20Networking.md)
   - [Storage And Large Data](System%20Design/9.%20Storate%20And%20Largedata.md)
+  - [Video Upload](System%20Design/10.%20video%20upload.md)
 
 - [Topics Format Guide](topics-format.md)
