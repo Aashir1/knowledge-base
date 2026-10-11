@@ -1,1508 +1,753 @@
-Absolutely. I’ll keep the same learning style as the improved `useState` notes: **problem → mental model → simple example → what happens internally → common confusion → senior interview questions → revision notes**.
+# TypeScript
 
-# React Hooks — Senior Developer Interview Notes
+## TypeScript Generics
 
-## 1. What are Hooks?
+### What is it?
 
-### The Problem
+Generics allow you to write **reusable, type-safe code** without fixing the type in advance.
 
-React function components need to do more than just return JSX.
-
-A component may need to:
-
-* remember state
-* perform side effects
-* access DOM elements
-* share logic
-* optimize expensive calculations
-* access context
-* coordinate non-urgent updates
-
-Hooks provide these capabilities to function components.
+Instead of writing separate functions for `string`, `number`, etc., you write one function that works with any type.
 
 ---
 
-## 2. Core Mental Model
+### How does it work?
 
-> **Hooks are functions that let function components use React features such as state, effects, context, and refs.**
+Without Generics:
 
-Examples:
-
-```tsx
-useState()
-useEffect()
-useRef()
-useMemo()
-useCallback()
-useContext()
-useReducer()
-useTransition()
-useDeferredValue()
-```
-
-A Hook doesn't mean "something that automatically causes a render."
-
-Different Hooks solve different problems.
-
-```text
-useState
-→ component state
-
-useEffect
-→ synchronize with external systems
-
-useRef
-→ persist a value without causing a render
-
-useMemo
-→ cache a calculated value
-
-useCallback
-→ cache a function
-
-useContext
-→ read shared context
-
-useReducer
-→ manage complex state transitions
-
-useTransition
-→ mark updates as non-urgent
-
-useDeferredValue
-→ allow a value to update less urgently
-```
-
----
-
-# 3. Rules of Hooks
-
-Before learning individual Hooks, understand this.
-
-Hooks must be called:
-
-### ✅ At the top level
-
-```tsx
-function Component() {
-  const [count, setCount] = useState(0);
-
-  // ...
+```ts
+function getValue(value: string): string {
+  return value;
 }
 ```
 
-### ❌ Not inside conditions
+Works only for strings.
 
-```tsx
-if (isLoggedIn) {
-  useState(0); // ❌
+With Generics:
+
+```ts
+function getValue<T>(value: T): T {
+  return value;
 }
+
+getValue("Hello"); // string
+getValue(10);      // number
+getValue(true);    // boolean
 ```
 
-### ❌ Not inside loops
+`T` is a placeholder for any type.
 
-```tsx
-for (...) {
-  useState(0); // ❌
+---
+
+### Generic Interface
+
+```ts
+interface ApiResponse<T> {
+  data: T;
+  success: boolean;
 }
-```
 
-### ❌ Not inside regular functions
-
-```tsx
-function calculate() {
-  useState(0); // ❌
-}
-```
-
-They can be called inside:
-
-* React function components
-* Custom Hooks
-
----
-
-## Why?
-
-React needs to associate each Hook call with its corresponding state/effect across renders.
-
-Think:
-
-```text
-Render 1:
-
-useState()  → Hook #1
-useEffect() → Hook #2
-useRef()    → Hook #3
-
-
-Render 2:
-
-useState()  → Hook #1
-useEffect() → Hook #2
-useRef()    → Hook #3
-```
-
-React relies on the **consistent order of Hook calls**.
-
-If you conditionally call a Hook:
-
-```text
-Render 1:
-
-useState()  → #1
-useEffect() → #2
-
-
-Render 2:
-
-useState()  → #1
-               ↓
-condition changed
-               ↓
-useEffect() → #1 ❌
-```
-
-The ordering no longer matches.
-
-### Interview answer
-
-> Hooks must be called at the top level so React can maintain a consistent order of Hook calls between renders.
-
----
-
-# 4. `useState`
-
-We already covered this, but the interview mental model is:
-
-```tsx
-const [count, setCount] = useState(0);
-```
-
-> `useState` allows a component to maintain state between renders.
-
-```text
-count
-→ current state
-
-setCount()
-→ schedule state update
-
-state update
-→ component renders again
-```
-
-### Important
-
-```tsx
-setCount(count + 1);
-```
-
-versus:
-
-```tsx
-setCount(prev => prev + 1);
-```
-
-Use the functional form when the next value depends on the previous value.
-
----
-
-# 5. `useEffect`
-
-## The Problem
-
-Sometimes React needs to interact with something **outside React's rendering process**.
-
-Examples:
-
-* API requests
-* browser event listeners
-* timers
-* subscriptions
-* WebSocket connections
-* manipulating external systems
-
-That's where `useEffect` comes in.
-
----
-
-## Core Mental Model
-
-> **`useEffect` synchronizes your component with an external system.**
-
-```tsx
-useEffect(() => {
-  // synchronize with something external
-}, [dependencies]);
-```
-
-Think:
-
-```text
-React render
-     ↓
-DOM updated
-     ↓
-Effect runs
-     ↓
-External system synchronized
-```
-
----
-
-## Example
-
-```tsx
-useEffect(() => {
-  document.title = `Count: ${count}`;
-}, [count]);
-```
-
-Whenever `count` changes:
-
-```text
-count changes
-     ↓
-component renders
-     ↓
-React updates UI
-     ↓
-effect runs
-     ↓
-document.title updated
-```
-
----
-
-## Cleanup
-
-Some effects create something that needs to be removed.
-
-Example:
-
-```tsx
-useEffect(() => {
-  const handleResize = () => {
-    console.log(window.innerWidth);
-  };
-
-  window.addEventListener("resize", handleResize);
-
-  return () => {
-    window.removeEventListener("resize", handleResize);
-  };
-}, []);
-```
-
-Mental model:
-
-```text
-Effect starts something
-       ↓
-Component remains mounted
-       ↓
-Component unmounts / dependencies change
-       ↓
-Cleanup runs
-```
-
----
-
-## Dependency Array
-
-### No dependency array
-
-```tsx
-useEffect(() => {
-  // ...
-});
-```
-
-Runs after every render.
-
-### Empty dependency array
-
-```tsx
-useEffect(() => {
-  // ...
-}, []);
-```
-
-Runs after the initial mount in the normal mental model, with important development behavior under Strict Mode.
-
-### Dependencies
-
-```tsx
-useEffect(() => {
-  // ...
-}, [userId]);
-```
-
-Runs when `userId` changes.
-
----
-
-## Important Senior-Level Point
-
-Don't think:
-
-> "`useEffect` is for code that should run after rendering."
-
-That's incomplete.
-
-A better explanation is:
-
-> **Effects are for synchronizing React with external systems.**
-
-If you're only calculating a value from existing props/state, you usually **don't need an effect**.
-
-❌ Unnecessary:
-
-```tsx
-const [fullName, setFullName] = useState("");
-
-useEffect(() => {
-  setFullName(`${firstName} ${lastName}`);
-}, [firstName, lastName]);
-```
-
-Better:
-
-```tsx
-const fullName = `${firstName} ${lastName}`;
-```
-
----
-
-# 6. `useRef`
-
-## The Problem
-
-Sometimes we need to remember something between renders, but **changing it should not cause a re-render**.
-
-That's what `useRef` is useful for.
-
-```tsx
-const ref = useRef(initialValue);
-```
-
-The value is stored in:
-
-```tsx
-ref.current
-```
-
----
-
-## Mental Model
-
-> **`useRef` is a persistent box whose `.current` value survives renders without triggering a render when changed.**
-
-```text
-useState
-→ remember value
-→ changing it causes render
-
-useRef
-→ remember value
-→ changing it does NOT cause render
-```
-
----
-
-## DOM Example
-
-```tsx
-const inputRef = useRef<HTMLInputElement>(null);
-
-return (
-  <>
-    <input ref={inputRef} />
-    <button onClick={() => inputRef.current?.focus()}>
-      Focus
-    </button>
-  </>
-);
-```
-
-React gives us access to the DOM element:
-
-```text
-inputRef.current
-       ↓
-<input>
-```
-
----
-
-## Persisting a Value
-
-```tsx
-const renderCount = useRef(0);
-
-renderCount.current++;
-```
-
-The value survives renders.
-
-But:
-
-```tsx
-renderCount.current++;
-```
-
-does **not** cause another render.
-
----
-
-## Common Confusion
-
-### `useState` vs `useRef`
-
-|                              | `useState` | `useRef`             |
-| ---------------------------- | ---------- | -------------------- |
-| Persists between renders     | ✅          | ✅                    |
-| Changing value causes render | ✅          | ❌                    |
-| Access value                 | variable   | `.current`           |
-| Common use                   | UI state   | DOM / mutable values |
-
-### Interview answer
-
-> `useRef` stores a mutable value that persists between renders without causing a re-render when the value changes.
-
----
-
-# 7. `useMemo`
-
-## The Problem
-
-Suppose a calculation is expensive:
-
-```tsx
-const filteredUsers = expensiveFilter(users);
-```
-
-Every render executes it again.
-
-If the inputs haven't changed, that work may be unnecessary.
-
----
-
-## Mental Model
-
-> **`useMemo` caches the result of a calculation until its dependencies change.**
-
-```tsx
-const filteredUsers = useMemo(
-  () => expensiveFilter(users),
-  [users]
-);
-```
-
-Think:
-
-```text
-First render
-     ↓
-calculate
-     ↓
-cache result
-
-Next render
-     ↓
-users unchanged?
-     ↓
-YES → reuse cached result
-
-users changed?
-     ↓
-NO → calculate again
-```
-
----
-
-## Important
-
-Don't use `useMemo` everywhere.
-
-It has its own cost:
-
-* React has to store the memoized value
-* React has to compare dependencies
-* the calculation itself may be cheap
-
-So:
-
-> **Memoization is useful when the calculation is expensive or when stable identity matters.**
-
----
-
-# 8. `useCallback`
-
-## The Problem
-
-Every render creates a new function:
-
-```tsx
-const handleClick = () => {
-  // ...
+const user: ApiResponse<User> = {
+  data: { id: 1, name: "Ali" },
+  success: true,
 };
 ```
 
-Conceptually:
-
-```text
-Render 1 → function A
-
-Render 2 → function B
-
-Render 3 → function C
-```
-
-Even if the function does exactly the same thing, its reference is different.
-
 ---
 
-## Mental Model
+### Generic Array
 
-> **`useCallback` caches the function reference until its dependencies change.**
+```ts
+const numbers: Array<number> = [1, 2, 3];
 
-```tsx
-const handleClick = useCallback(() => {
-  console.log("clicked");
-}, []);
-```
-
-Now React can reuse the same function reference between renders while dependencies remain unchanged.
-
----
-
-## Why does this matter?
-
-Especially when passing callbacks to memoized children:
-
-```tsx
-const Child = memo(({ onClick }) => {
-  // ...
-});
-```
-
-Without stable callback identity:
-
-```text
-Parent renders
-    ↓
-new function created
-    ↓
-Child receives different function
-    ↓
-Child may render again
-```
-
-With `useCallback`:
-
-```text
-Parent renders
-    ↓
-same callback reference
-    ↓
-memoized Child can potentially skip rendering
-```
-
-### Important
-
-`useCallback` doesn't make the function itself faster.
-
-It primarily provides **stable function identity**.
-
----
-
-# 9. `useMemo` vs `useCallback`
-
-This is a very common senior interview question.
-
-```tsx
-useMemo(() => calculateValue(), deps);
-```
-
-Caches a **value**.
-
-```tsx
-useCallback(() => doSomething(), deps);
-```
-
-Caches a **function reference**.
-
-Easy memory trick:
-
-```text
-useMemo
-→ memoize a result
-
-useCallback
-→ memoize a callback
+// Same as
+const numbers: number[] = [1, 2, 3];
 ```
 
 ---
 
-# 10. `useContext`
+### Memory Trick
 
-## The Problem
-
-Imagine:
-
-```text
-App
- ↓
-Dashboard
- ↓
-Sidebar
- ↓
-UserProfile
-```
-
-You need to pass:
-
-```text
-user
-```
-
-through every component.
-
-This is **prop drilling**.
+> **Generics = Write once, work with any type.**
 
 ---
 
-## Mental Model
+### Senior Interview Questions
 
-> **Context allows components to read shared values without passing them manually through every intermediate component.**
+#### Q1: Why use Generics?
 
-Create context:
-
-```tsx
-const UserContext = createContext<User | null>(null);
-```
-
-Provider:
-
-```tsx
-<UserContext.Provider value={user}>
-  <Dashboard />
-</UserContext.Provider>
-```
-
-Consumer:
-
-```tsx
-const user = useContext(UserContext);
-```
-
-Mental model:
-
-```text
-Provider
-   ↓
-shared value
-   ↓
-any descendant can read it
-```
+To write reusable functions, classes, and interfaces while maintaining type safety.
 
 ---
 
-## Senior Interview Point
+#### Q2: What does `<T>` mean?
 
-Context is **not automatically a global state management solution**.
-
-When context value changes, consumers that use that context can re-render.
-
-For large/high-frequency state, blindly putting everything into one context can cause unnecessary rendering.
+`T` is a **type parameter** (placeholder). It represents any type and is replaced when the function or class is used.
 
 ---
 
-# 11. `useReducer`
+#### Q3: Can a Generic have constraints?
 
-## The Problem
+Yes.
 
-State can become complicated when many different actions can change it.
-
-Instead of:
-
-```tsx
-setUser(...)
-setLoading(...)
-setError(...)
-setData(...)
-```
-
-you may have a state transition model.
-
----
-
-## Mental Model
-
-> **`useReducer` manages state by describing state changes as actions.**
-
-```tsx
-const [state, dispatch] = useReducer(reducer, initialState);
-```
-
-Instead of directly changing state:
-
-```tsx
-dispatch({
-  type: "LOGIN_SUCCESS",
-  payload: user
-});
-```
-
-Reducer:
-
-```tsx
-function reducer(state, action) {
-  switch (action.type) {
-    case "LOGIN_SUCCESS":
-      return {
-        ...state,
-        user: action.payload,
-        loading: false
-      };
-
-    default:
-      return state;
-  }
+```ts
+function printLength<T extends { length: number }>(item: T) {
+  console.log(item.length);
 }
 ```
 
-Think:
+Only types with a `length` property are allowed.
 
-```text
-Current State
-     +
-   Action
-     ↓
-  Reducer
-     ↓
-Next State
+---
+
+#### Q4: Can Generics have multiple type parameters?
+
+Yes.
+
+```ts
+function pair<T, U>(first: T, second: U) {
+  return { first, second };
+}
+
+pair("Ali", 25);
 ```
 
 ---
 
-## When is it useful?
+### Common Mistakes
 
-When:
+❌ Using `any` instead of Generics.
 
-* state has multiple related values
-* many actions can change the state
-* state transitions need to be predictable
-* you want to centralize state transition logic
-
----
-
-# 12. `useTransition`
-
-This is an important modern React topic.
-
-## The Problem
-
-Not every UI update has the same urgency.
-
-For example:
-
-```text
-User types in search box
-        ↓
-Input should update immediately
-
-Filtering 10,000 results
-        ↓
-Can happen less urgently
+```ts
+function getValue(value: any): any {}
 ```
 
-We don't want expensive rendering work to make typing feel slow.
+This loses type safety.
 
----
+✅ Better:
 
-## Mental Model
-
-> **`useTransition` lets you mark certain state updates as non-urgent.**
-
-```tsx
-const [isPending, startTransition] = useTransition();
-```
-
-Then:
-
-```tsx
-startTransition(() => {
-  setSearchResults(results);
-});
-```
-
-Think:
-
-```text
-Urgent update
-→ do immediately
-
-Transition update
-→ React can work on it without blocking urgent UI
-```
-
-`isPending` tells you whether the transition is still in progress.
-
----
-
-## Important
-
-`useTransition` does **not** make the expensive operation itself faster.
-
-It changes the **priority of the update** so React can keep urgent interactions responsive.
-
----
-
-# 13. `useDeferredValue`
-
-## The Problem
-
-Sometimes you don't control the state update itself.
-
-You receive a value:
-
-```tsx
-const searchTerm = props.searchTerm;
-```
-
-but rendering based on that value may be expensive.
-
-You can create a deferred version:
-
-```tsx
-const deferredSearchTerm = useDeferredValue(searchTerm);
+```ts
+function getValue<T>(value: T): T {}
 ```
 
 ---
 
-## Mental Model
+### Interview Answer (30 sec)
 
-> **`useDeferredValue` allows a value to lag behind the latest value when React is busy.**
+> Generics allow us to write reusable, type-safe code without knowing the exact type in advance. We define a type parameter, such as `<T>`, and TypeScript infers the actual type when the function, class, or interface is used. This avoids code duplication while preserving strong type checking.
 
-Think:
 
-```text
-searchTerm
-    ↓
-urgent value
+## Utility Types (TypeScript)
 
-deferredSearchTerm
-    ↓
-less urgent version
-```
+### 1. Short explanation (What + Why)
 
-The important UI can remain responsive while the expensive UI catches up.
+**What:**
+Utility Types are built-in TypeScript types that transform existing types (e.g., make properties optional, readonly, required, etc.).
+
+**Why:**
+They reduce code duplication and help create reusable, maintainable type definitions.
 
 ---
 
-# 14. `useTransition` vs `useDeferredValue`
+### 2. Simple internal working (Senior interview level)
 
-Very common senior question.
-
-### `useTransition`
-
-You control the **state update**:
-
-```tsx
-startTransition(() => {
-  setResults(results);
-});
-```
-
-### `useDeferredValue`
-
-You control the **value**:
-
-```tsx
-const deferredValue = useDeferredValue(value);
-```
-
-Memory trick:
-
-```text
-useTransition
-→ "Make this update less urgent."
-
-useDeferredValue
-→ "Let this value update less urgently."
-```
-
----
-
-# 15. Custom Hooks
-
-## The Problem
-
-Imagine several components need the same logic:
-
-```text
-Component A
-→ fetch users
-→ loading
-→ error
-
-Component B
-→ fetch users
-→ loading
-→ error
-
-Component C
-→ fetch users
-→ loading
-→ error
-```
-
-We don't want to duplicate that logic.
-
-We can extract it into a **Custom Hook**.
-
----
-
-## Mental Model
-
-> **A Custom Hook is a reusable function that contains React Hook logic.**
-
-It normally starts with:
-
-```text
-use...
-```
+Utility Types use **TypeScript generics + mapped types + conditional types** to transform an existing type at compile time.
 
 Example:
 
-```tsx
-function useUsers() {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchUsers()
-      .then(setUsers)
-      .finally(() => setLoading(false));
-  }, []);
-
-  return {
-    users,
-    loading
-  };
-}
+```ts
+type User = {
+  id: number;
+  name: string;
+};
 ```
 
-Then:
+`Partial<User>` internally behaves like:
 
-```tsx
-function UserList() {
-  const { users, loading } = useUsers();
-
-  // ...
-}
-```
-
-Another component can also use:
-
-```tsx
-const { users, loading } = useUsers();
+```ts
+type Partial<T> = {
+  [K in keyof T]?: T[K];
+};
 ```
 
 ---
 
-# 16. Important Custom Hook Concept
+### 3. Common Utility Types
 
-A Custom Hook **shares logic, not state**.
-
-For example:
-
-```tsx
-function useCounter() {
-  const [count, setCount] = useState(0);
-
-  return {
-    count,
-    increment: () => setCount(prev => prev + 1)
-  };
+```ts
+interface User {
+  id: number;
+  name: string;
+  age?: number;
 }
 ```
 
-If two components do:
+#### `Partial<T>` → All optional
 
-```tsx
-const counterA = useCounter();
-const counterB = useCounter();
+```ts
+type UpdateUser = Partial<User>;
 ```
 
-they have **two separate state instances**.
+#### `Required<T>` → All required
 
-```text
-Component A
-useCounter()
-    ↓
-State A
-
-Component B
-useCounter()
-    ↓
-State B
+```ts
+type FullUser = Required<User>;
 ```
 
-The logic is shared.
+#### `Readonly<T>` → Cannot modify
 
-The state is not.
-
-This is a **very good senior interview question**.
-
----
-
-# 17. Custom Hook vs Utility Function
-
-A normal utility function:
-
-```tsx
-function formatCurrency(amount) {
-  return `$${amount}`;
-}
+```ts
+const user: Readonly<User> = { id: 1, name: "John" };
+// user.name = "Mike"; ❌
 ```
 
-doesn't use React Hooks.
+#### `Pick<T, K>` → Select properties
 
-A Custom Hook:
-
-```tsx
-function useOnlineStatus() {
-  const [online, setOnline] = useState(navigator.onLine);
-
-  // React Hook logic...
-
-  return online;
-}
+```ts
+type UserBasic = Pick<User, "id" | "name">;
 ```
 
-uses React Hooks.
+#### `Omit<T, K>` → Remove properties
 
-Memory trick:
+```ts
+type UserWithoutAge = Omit<User, "age">;
+```
 
-```text
-Utility function
-→ reusable JavaScript logic
+#### `Record<K, T>` → Key-value object
 
-Custom Hook
-→ reusable React logic
+```ts
+type Users = Record<string, User>;
 ```
 
 ---
 
-# 18. Example: `useDebounce`
+### 4. One-line memory trick
 
-A practical Custom Hook:
+**"Utility Types transform existing types without rewriting them."**
 
-```tsx
-function useDebounce<T>(value: T, delay: number) {
-  const [debouncedValue, setDebouncedValue] = useState(value);
+---
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
+### 5. Senior Interview Questions
 
-    return () => clearTimeout(timer);
-  }, [value, delay]);
+#### Q1. `Pick` vs `Omit`?
 
-  return debouncedValue;
+**Answer:**
+
+* `Pick` → Keep selected properties.
+* `Omit` → Remove selected properties.
+
+---
+
+#### Q2. When do you use `Partial`?
+
+**Answer:**
+For update APIs, forms, or PATCH requests where only some fields are sent.
+
+---
+
+#### Q3. Is `Readonly` runtime protection?
+
+**Answer:**
+No. It's **compile-time only**; JavaScript can still mutate the object unless it's frozen.
+
+---
+
+### 6. Common mistakes
+
+❌ Assuming Utility Types affect runtime.
+
+❌ Using `Partial` for API responses when fields are actually required.
+
+❌ Confusing `Pick` and `Omit`.
+
+---
+
+### 7. 30-second interview response
+
+"Utility Types are built-in TypeScript helpers that transform existing types without rewriting them. Common ones include `Partial`, `Required`, `Readonly`, `Pick`, `Omit`, and `Record`. They are implemented using generics and mapped types, improve code reusability, and provide compile-time type safety without affecting runtime behavior."
+
+
+## Mapped Types (TypeScript)
+
+### 1. Short explanation (What + Why)
+
+**What:**
+Mapped Types let you create a new type by **iterating over the properties of an existing type** and transforming them.
+
+**Why:**
+They reduce code duplication and allow reusable type transformations (e.g., making all properties optional, readonly, nullable, etc.).
+
+---
+
+### 2. Simple internal working (Senior interview level)
+
+Internally, TypeScript:
+
+1. Gets all property keys using `keyof`.
+2. Loops over each key with `[K in keyof T]`.
+3. Applies a transformation to each property's type.
+4. Produces a **new type** at compile time.
+
+Example:
+
+```ts
+interface User {
+  id: number;
+  name: string;
+  active: boolean;
 }
+
+type OptionalUser = {
+  [K in keyof User]?: User[K];
+};
+```
+
+Equivalent to:
+
+```ts
+type OptionalUser = {
+  id?: number;
+  name?: string;
+  active?: boolean;
+};
+```
+
+> **Mapped Types exist only at compile time; they generate no JavaScript.**
+
+---
+
+### 3. Small practical example/code
+
+#### Example 1: Make every property readonly
+
+```ts
+interface User {
+  id: number;
+  name: string;
+}
+
+type ReadonlyUser = {
+  readonly [K in keyof User]: User[K];
+};
+```
+
+---
+
+#### Example 2: Make every property nullable
+
+```ts
+type Nullable<T> = {
+  [K in keyof T]: T[K] | null;
+};
+
+type UserNullable = Nullable<User>;
+```
+
+Result:
+
+```ts
+{
+  id: number | null;
+  name: string | null;
+}
+```
+
+---
+
+#### Example 3: Key Remapping (TS 4.1+)
+
+```ts
+type Getters<T> = {
+  [K in keyof T as `get${Capitalize<string & K>}`]: () => T[K];
+};
+```
+
+Result:
+
+```ts
+{
+  getId: () => number;
+  getName: () => string;
+}
+```
+
+---
+
+### 4. One-line memory trick
+
+**"Mapped Types = `for...of` loop for TypeScript object properties."**
+
+---
+
+### 5. 3 important senior interview questions
+
+#### Q1. How are Utility Types related to Mapped Types?
+
+**Answer:**
+
+Most built-in Utility Types (`Partial`, `Readonly`, `Required`, `Pick`) are implemented using **Mapped Types**.
+
+---
+
+#### Q2. What's the difference between Mapped Types and Index Signatures?
+
+**Answer:**
+
+* **Mapped Type:** Iterates over **existing keys** of another type.
+* **Index Signature:** Allows **any key** of a certain type.
+
+```ts
+// Mapped Type
+type T = {
+  [K in keyof User]: User[K];
+};
+
+// Index Signature
+type T = {
+  [key: string]: string;
+};
+```
+
+---
+
+#### Q3. What is key remapping?
+
+**Answer:**
+
+Key remapping (`as`) lets you **rename or filter properties** while creating a new type.
+
+Example:
+
+```ts
+type Prefix<T> = {
+  [K in keyof T as `api_${string & K}`]: T[K];
+};
+```
+
+---
+
+### 6. Common mistakes
+
+* ❌ Confusing **Mapped Types** with **Index Signatures**.
+* ❌ Forgetting `keyof` when iterating over properties.
+* ❌ Assuming Mapped Types exist at runtime (they don't).
+* ❌ Overusing custom mapped types when a built-in Utility Type already exists.
+
+---
+
+### 7. 30-second interview response
+
+> "Mapped Types allow us to create new types by iterating over the keys of an existing type using `[K in keyof T]`. They're used to transform properties—for example, making them optional, readonly, nullable, or even renaming them with key remapping. Most built-in utility types like `Partial`, `Readonly`, and `Required` are implemented using mapped types. They improve code reuse and maintainability while providing compile-time type safety."
+
+## Conditional Types (TypeScript)
+
+### 1. Short explanation (What + Why)
+
+**What:**
+Conditional Types let you choose one type or another based on a condition.
+
+**Why:**
+They enable dynamic and reusable type logic, allowing types to adapt based on input.
+
+**Syntax:**
+
+```ts
+T extends U ? X : Y
+```
+
+Read as: **"If `T` extends `U`, use `X`; otherwise use `Y`."**
+
+---
+
+### 2. Simple internal working (Senior interview level)
+
+TypeScript evaluates the condition **at compile time**:
+
+1. Check if `T` is assignable to `U`.
+2. If **true**, return the first type.
+3. Otherwise, return the second type.
+
+Example:
+
+```ts
+type IsString<T> = T extends string ? true : false;
 ```
 
 Usage:
 
-```tsx
-const debouncedSearch = useDebounce(search, 500);
+```ts
+type A = IsString<string>; // true
+type B = IsString<number>; // false
 ```
 
-Mental model:
+> **Conditional Types exist only at compile time and generate no JavaScript.**
 
-```text
-User types
-   ↓
-search changes
-   ↓
-timer starts
-   ↓
-user types again
-   ↓
-old timer cancelled
-   ↓
-new timer starts
-   ↓
-500ms passes
-   ↓
-debounced value updates
-```
+---
 
-This is a good example of combining:
+### 3. Small practical example/code
 
-```text
-useState
-+
-useEffect
-+
-Custom Hook
+#### Example 1: Basic Conditional Type
+
+```ts
+type IsNumber<T> = T extends number ? "Yes" : "No";
+
+type A = IsNumber<number>; // "Yes"
+type B = IsNumber<boolean>; // "No"
 ```
 
 ---
 
-# 19. Hook Selection Mental Model
+#### Example 2: Using `infer`
 
-When you see a problem, ask:
+Extract the return type of a function:
 
-```text
-Do I need to remember UI state?
-        ↓
-     useState
+```ts
+type MyReturnType<T> = T extends (...args: any[]) => infer R ? R : never;
 
-Is state transition logic complex?
-        ↓
-     useReducer
+type Fn = () => string;
 
-Do I need synchronization with something external?
-        ↓
-     useEffect
-
-Do I need a value to persist without rendering?
-        ↓
-     useRef
-
-Do I need to cache an expensive calculation?
-        ↓
-     useMemo
-
-Do I need stable function identity?
-        ↓
-     useCallback
-
-Do many descendants need shared data?
-        ↓
-     useContext
-
-Is an update non-urgent?
-        ↓
-     useTransition
-
-Should a value be allowed to lag?
-        ↓
-     useDeferredValue
-
-Do multiple components need the same React logic?
-        ↓
-     Custom Hook
+type Result = MyReturnType<Fn>; // string
 ```
 
----
-
-# Senior-Level Interview Questions
-
-## Hooks fundamentals
-
-### Q1. Why were Hooks introduced?
-
-Hooks allow function components to use state and other React features without requiring class components, and they make it easier to reuse stateful logic through Custom Hooks.
+> `infer` lets TypeScript infer a type from another type.
 
 ---
 
-### Q2. What are the Rules of Hooks?
+#### Example 3: Distributive Conditional Types
 
-Hooks must:
+```ts
+type ToArray<T> = T extends any ? T[] : never;
 
-1. Be called at the top level.
-2. Be called only from React components or Custom Hooks.
-
-The key reason is maintaining consistent Hook call order across renders.
-
----
-
-### Q3. Why can't Hooks be called conditionally?
-
-Because React relies on the order of Hook calls to associate Hook state and effects with the correct Hook between renders.
-
----
-
-### Q4. `useState` vs `useRef`?
-
-```text
-useState
-→ persists value
-→ update causes render
-
-useRef
-→ persists value
-→ changing .current doesn't cause render
+type Result = ToArray<string | number>;
 ```
 
----
+Result:
 
-### Q5. `useMemo` vs `useCallback`?
-
-```text
-useMemo
-→ memoizes a calculated value
-
-useCallback
-→ memoizes a function reference
+```ts
+string[] | number[]
 ```
 
----
-
-### Q6. Does `useMemo` guarantee that a calculation only runs once?
-
-No.
-
-It is a **performance optimization**, not a semantic guarantee that code executes exactly once.
+TypeScript applies the condition to each member of the union individually.
 
 ---
 
-### Q7. Does `useCallback` make a function faster?
+### 4. One-line memory trick
 
-No.
-
-Its primary purpose is maintaining a stable function reference between renders when dependencies don't change.
+**"Conditional Types = if-else statements for TypeScript types."**
 
 ---
 
-### Q8. When should you avoid `useMemo` and `useCallback`?
+### 5. 3 important senior interview questions
 
-When the calculation/function is cheap and memoization doesn't provide a meaningful benefit.
+#### Q1. What is the syntax of a Conditional Type?
 
-They add their own complexity and dependency tracking.
+**Answer:**
 
----
-
-### Q9. What is the purpose of the dependency array in `useEffect`?
-
-It tells React which reactive values the effect depends on, allowing React to determine when the effect needs to synchronize again.
-
----
-
-### Q10. Why does an effect return a cleanup function?
-
-To undo the synchronization or clean up resources created by the effect.
-
-Examples:
-
-```text
-remove event listener
-clear timer
-unsubscribe
-disconnect WebSocket
+```ts
+T extends U ? X : Y
 ```
 
+If `T` satisfies `U`, TypeScript returns `X`; otherwise, it returns `Y`.
+
 ---
 
-### Q11. What is a stale closure?
+#### Q2. What is `infer`?
 
-A function created during a render captures the values from that render.
+**Answer:**
 
-If an asynchronous callback later executes, it may see an older value than you expect.
+`infer` extracts a type inside a conditional type.
 
 Example:
 
-```tsx
-useEffect(() => {
-  const timer = setTimeout(() => {
-    console.log(count);
-  }, 1000);
-
-  return () => clearTimeout(timer);
-}, []);
+```ts
+type Return<T> = T extends (...args: any[]) => infer R ? R : never;
 ```
 
-Because the dependency list is empty, the effect captures the initial `count`.
-
-Understanding **closures + renders + dependencies** is essential for diagnosing stale state bugs.
+It's commonly used in utility types like `ReturnType` and `Parameters`.
 
 ---
 
-### Q12. Can Custom Hooks share state between components?
+#### Q3. What are distributive conditional types?
 
-No.
+**Answer:**
 
-Custom Hooks share **logic**, but each invocation gets its own state.
+When a conditional type receives a **union**, TypeScript evaluates each member separately.
+
+```ts
+type T<TValue> = TValue extends string ? "S" : "N";
+
+type Result = T<string | number>; // "S" | "N"
+```
 
 ---
 
-### Q13. When would you use `useReducer` instead of `useState`?
+### 6. Common mistakes
 
-When state transitions become complex or multiple related pieces of state are updated through many different actions.
+* ❌ Confusing Conditional Types with runtime `if` statements.
+* ❌ Forgetting that they are **compile-time only**.
+* ❌ Not understanding how unions distribute automatically.
+* ❌ Misusing `infer` outside conditional types.
 
 ---
 
-### Q14. Context vs Custom Hook?
+### 7. 30-second interview response
 
-They're not alternatives.
+> "Conditional Types let us create types that change based on a condition using the syntax `T extends U ? X : Y`. They work like compile-time if-else statements and are widely used to build reusable utility types. Combined with `infer`, they can extract types such as function return types or parameter types. Many built-in utility types, including `ReturnType` and `Exclude`, are implemented using conditional types.`
 
-A Custom Hook can encapsulate how context is consumed:
 
-```tsx
-function useAuth() {
-  return useContext(AuthContext);
+That's a good point. For interview prep, I shouldn't assume you already know related concepts. Here's a better version that explains the differences briefly.
+
+## Interface vs Type (TypeScript)
+
+| **Interface**                                             | **Type**                                                                                                       |
+| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Defines the shape of an object                            | Can define **objects, primitives (`string`), unions (`A \| B`), tuples (`[string, number]`), functions**, etc. |
+| Two interfaces with the same name **merge automatically** | Two types with the same name cause an error                                                                    |
+| Uses `extends` to inherit                                 | Uses `&` (intersection) to combine types                                                                       |
+| Best for object models and classes                        | Best for advanced type manipulation                                                                            |
+
+### Short Examples
+
+#### 1. Object (Both can do this)
+
+```ts
+interface User {
+  id: number;
+  name: string;
+}
+
+type User = {
+  id: number;
+  name: string;
+};
+```
+
+---
+
+#### 2. Union (Only `type`)
+
+A variable can be **one of multiple types**.
+
+```ts
+type Status = "loading" | "success" | "error";
+```
+
+---
+
+#### 3. Tuple (Only `type`)
+
+A fixed-length array with fixed types.
+
+```ts
+type UserInfo = [string, number];
+
+// ["John", 25]
+```
+
+---
+
+#### 4. Declaration Merging (Only `interface`)
+
+Two interfaces with the same name automatically combine.
+
+```ts
+interface User {
+  id: number;
+}
+
+interface User {
+  name: string;
+}
+
+// Result:
+interface User {
+  id: number;
+  name: string;
 }
 ```
 
-Context provides the shared value.
-
-The Custom Hook provides a reusable API for consuming it.
+Doing the same with `type` gives an error.
 
 ---
 
-### Q15. `useTransition` vs `useDeferredValue`?
+### When to use?
 
-```text
-useTransition
-→ mark a state update as non-urgent
-
-useDeferredValue
-→ create a less-urgent version of an existing value
-```
+* ✅ **Use `interface`** for object models, APIs, and classes.
+* ✅ **Use `type`** when you need unions, tuples, conditional types, mapped types, or intersections.
 
 ---
 
-### Q16. Does `useEffect` run before or after the DOM is painted?
+### Memory Trick
 
-For the normal `useEffect`, React generally lets the browser paint before running the effect when possible.
+* **Interface = Object Contract (can merge)**
+* **Type = Everything (objects + advanced types)**
 
-If code must run synchronously after DOM mutations but before the browser paints, React provides `useLayoutEffect`.
-
----
-
-# `useEffect` vs `useLayoutEffect`
-
-This is worth knowing for senior interviews.
-
-### `useEffect`
-
-```text
-Render
- ↓
-DOM commit
- ↓
-Browser can paint
- ↓
-Effect
-```
-
-Use it for normal synchronization.
-
-### `useLayoutEffect`
-
-```text
-Render
- ↓
-DOM commit
- ↓
-useLayoutEffect
- ↓
-Browser paint
-```
-
-It is useful when you need to **measure or synchronously adjust the DOM before the user sees the result**.
-
-Example:
-
-```text
-measure element
-→ calculate position
-→ update layout
-→ paint
-```
-
-But don't use `useLayoutEffect` by default. It can block painting.
+This style is much better for interviews because it introduces every concept briefly instead of assuming you already know terms like **union**, **tuple**, or **declaration merging**.
 
 ---
 
-# Final Revision Sheet 🧠
+## TypeScript Quick Reference
 
-```text
-useState
-→ Remember state between renders.
-→ Setter schedules a render.
+*(Condensed overview — see the detailed topics above for full explanations.)*
 
-useEffect
-→ Synchronize with external systems.
-→ Cleanup removes previous synchronization/resources.
+### Generics
+A placeholder for a type, so one function/component works safely with many types.
+```ts
+function firstItem<T>(arr: T[]): T { return arr[0]; }
+firstItem<number>([1, 2, 3]);   // T = number
+firstItem<string>(['a', 'b']);  // T = string
+```
+**Analogy:** Generics are like a labeled box — you decide what goes inside (`T`) when you use it, not when you build the box.
 
-useRef
-→ Persist a mutable value without causing render.
-→ Commonly used for DOM references.
-
-useMemo
-→ Cache a calculated value.
-
-useCallback
-→ Cache a function reference.
-
-useContext
-→ Read shared context without prop drilling.
-
-useReducer
-→ Manage complex state transitions through actions.
-
-useTransition
-→ Mark state updates as non-urgent.
-
-useDeferredValue
-→ Allow a value to update less urgently.
-
-Custom Hook
-→ Extract and reuse React logic.
-→ Shares logic, NOT state.
+### Utility types
+Built-in transformers for existing types instead of writing new ones by hand.
+```ts
+interface User { id: number; name: string; email: string; }
+type UserPreview = Pick<User, 'id' | 'name'>;   // only id + name
+type OptionalUser = Partial<User>;              // all fields optional
+type NoEmail = Omit<User, 'email'>;              // everything except email
 ```
 
-## The senior mental model
-
-Don't memorize Hooks as a list.
-
-Think about **what problem you're solving**:
-
-```text
-Remember something?
-       ↓
-   useState / useRef
-
-Synchronize with outside world?
-       ↓
-    useEffect
-
-Expensive calculation?
-       ↓
-     useMemo
-
-Stable callback?
-       ↓
-   useCallback
-
-Shared context?
-       ↓
-   useContext
-
-Complex state transitions?
-       ↓
-   useReducer
-
-Non-urgent update?
-       ↓
- useTransition
-
-Value can lag?
-       ↓
-useDeferredValue
-
-Same React logic in multiple places?
-       ↓
-   Custom Hook
+### Mapped types
+The mechanism *behind* utility types — looping over a type's keys to build a new type.
+```ts
+type ReadonlyUser = { readonly [K in keyof User]: User[K] };
 ```
 
-**One important senior-level takeaway:** don't describe Hooks as merely "functions that cause re-renders." Each Hook solves a different problem, and understanding **why you would choose one over another** is much more important in a senior interview.
+### Conditional types & `infer`
+Types that branch based on a condition; `infer` lets you "capture" a type you don't know yet.
+```ts
+type IsString<T> = T extends string ? true : false;
+type A = IsString<'hi'>; // true
+
+type ReturnOf<T> = T extends (...args: any[]) => infer R ? R : never;
+type R1 = ReturnOf<() => number>; // number
+```
+
+### `keyof`
+Gives you a union of an object type's property names — useful for type-safe property access.
+```ts
+type UserKeys = keyof User; // 'id' | 'name' | 'email'
+function getProp<T, K extends keyof T>(obj: T, key: K) { return obj[key]; } // key must be a real property
+```
+
+### Discriminated unions & type narrowing
+A union where every variant shares one common "tag" field, so TypeScript can figure out exactly which shape you have.
+```ts
+type Shape =
+  | { kind: 'circle'; radius: number }
+  | { kind: 'square'; side: number };
+
+function area(s: Shape) {
+  if (s.kind === 'circle') return Math.PI * s.radius ** 2; // TS knows `radius` exists here
+  return s.side ** 2; // TS knows it's the square variant here
+}
+```
+
+### Interfaces vs types
+Both describe object shapes. `interface` can be re-opened and merged later; `type` is more flexible (can represent unions, tuples, primitives) but is closed once declared.
+```ts
+interface Animal { name: string }
+interface Animal { age: number } // ✅ merges automatically into one interface
+
+type Point = { x: number } | [number, number]; // ✅ type can do unions, interface can't
+```
