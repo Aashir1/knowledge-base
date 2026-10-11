@@ -1,0 +1,18 @@
+{
+  "title": "Frontend",
+  "defaultOpen": true,
+  "pages": [
+    "topics",
+    "preparation-guide",
+    "javascript",
+    "typescript",
+    "react",
+    "security",
+    "problem-solving",
+    "system-design",
+    "javascript-problems",
+    "practical-problems",
+    "---Implementations---",
+    "[Concept: bind()](https://aashir1.github.io/knowledge-base/implementations/concept-bind.html)"
+  ]
+}

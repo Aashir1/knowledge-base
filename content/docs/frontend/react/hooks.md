@@ -1,0 +1,2018 @@
+---
+title: "Hooks"
+---
+
+`useMemo`, `useCallback`, and `React.memo` live in `3. React Performance.md`. `useTransition` and `useDeferredValue` have their own files. This file covers the hooks that run a component's actual logic, plus Custom Hooks.
+
+---
+
+## 0. What Are Hooks?
+
+### The Problem
+
+React function components need to do more than just return JSX — remember state, run side effects, access DOM elements, share logic across components. A plain function can't do any of that between calls; it just runs top to bottom and forgets everything.
+
+### Core Mental Model
+
+> **Hooks are functions that let function components use React features — state, effects, refs, context, and more.**
+
+A hook doesn't mean "something that causes a render." Different hooks solve entirely different problems:
+
+```text
+useState    → component state
+useEffect   → synchronize with external systems
+useRef      → persist a value without causing a render
+useReducer  → manage complex state transitions
+useContext  → read shared context without prop drilling
+
+useMemo / useCallback            → caching        (see 3. React Performance.md)
+useTransition / useDeferredValue → update priority (see their own files)
+```
+
+---
+
+## Rules of Hooks
+
+Hooks must be called at the top level of a component or another hook — never inside a condition, loop, or regular function.
+
+```tsx
+// ✅
+function Component() {
+  const [count, setCount] = useState(0);
+}
+
+// ❌ inside a condition
+if (isLoggedIn) {
+  useState(0);
+}
+
+// ❌ inside a loop
+for (...) {
+  useState(0);
+}
+
+// ❌ inside a regular function
+function calculate() {
+  useState(0);
+}
+```
+
+### Why
+
+React matches each hook call to its internal slot **by call order**, not by name:
+
+```text
+Render 1:  useState() → slot #1     useEffect() → slot #2
+Render 2:  useState() → slot #1     useEffect() → slot #2
+```
+
+If a hook call is skipped conditionally on some renders but not others, every hook after it shifts to the wrong slot:
+
+```text
+Render 1:  useState() → #1     useEffect() → #2
+Render 2:  useState() → #1     (condition changed, useEffect skipped this time)
+                                  → whatever hook comes next now reads slot #2's stale data
+```
+
+**Interview answer:** "Hooks must be called at the top level so React can maintain a consistent order of hook calls between renders — that order is how React knows which stored state belongs to which hook call."
+
+---
+
+## React `useState` — Simple Mental Model
+
+### 1. The problem
+
+In React, a component needs to **remember something between renders**.
+
+For example:
+
+```tsx
+function Counter() {
+  let count = 0;
+
+  function increment() {
+    count++;
+  }
+
+  return <button onClick={increment}>{count}</button>;
+}
+```
+
+This doesn't work as expected.
+
+Why?
+
+Every time React renders the component, `count` is created again:
+
+```text
+Render 1 → count = 0
+Render 2 → count = 0
+Render 3 → count = 0
+```
+
+So we need something that can:
+
+1. **Remember the value between renders**
+2. **Tell React to render again when the value changes**
+
+That's what `useState` does.
+
+---
+
+### 2. Core mental model
+
+Think of `useState` as:
+
+> **A value stored by React that survives re-renders.**
+
+```tsx
+const [count, setCount] = useState(0);
+```
+
+There are two things here:
+
+```text
+count     → current value
+setCount  → function that changes the value
+```
+
+And:
+
+```text
+useState(0)
+         ↑
+      initial value
+```
+
+So initially:
+
+```text
+count = 0
+```
+
+When you do:
+
+```tsx
+setCount(1);
+```
+
+React essentially says:
+
+```text
+"Okay, the state changed.
+I need to render this component again."
+```
+
+After the render:
+
+```text
+count = 1
+```
+
+---
+
+### 3. Small example
+
+```tsx
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <button onClick={() => setCount(count + 1)}>
+      {count}
+    </button>
+  );
+}
+```
+
+Imagine the user clicks the button.
+
+**First render**
+
+```text
+count = 0
+```
+
+UI:
+
+```text
+0
+```
+
+User clicks:
+
+```tsx
+setCount(count + 1);
+```
+
+which becomes:
+
+```tsx
+setCount(1);
+```
+
+React schedules another render.
+
+**Second render**
+
+```text
+count = 1
+```
+
+UI becomes:
+
+```text
+1
+```
+
+Click again:
+
+```text
+setCount(2)
+```
+
+React renders again.
+
+```text
+count = 2
+```
+
+---
+
+### 4. Why can't we just change the variable?
+
+This is a very common interview question.
+
+❌ This doesn't update the UI:
+
+```tsx
+count = count + 1;
+```
+
+Because React doesn't know that something changed.
+
+But:
+
+```tsx
+setCount(count + 1);
+```
+
+does two important things:
+
+```text
+Update state
+    ↓
+Schedule React to render again
+```
+
+That's the important difference.
+
+> **State is not just a variable. It is a value React tracks.**
+
+---
+
+### 5. Functional state update
+
+You will often see:
+
+```tsx
+setCount(prevCount => prevCount + 1);
+```
+
+Instead of:
+
+```tsx
+setCount(count + 1);
+```
+
+The functional version means:
+
+> "React, take the latest state value and calculate the next value from it."
+
+Example:
+
+```tsx
+setCount(prev => prev + 1);
+```
+
+If current state is:
+
+```text
+5
+```
+
+React calculates:
+
+```text
+5 + 1 = 6
+```
+
+This is particularly useful when the new state depends on the previous state, especially when multiple updates are involved.
+
+```tsx
+setCount(prev => prev + 1);
+setCount(prev => prev + 1);
+```
+
+The updates can be processed from the previous state:
+
+```text
+0 → 1 → 2
+```
+
+---
+
+### 6. What happens internally?
+
+A useful senior-level mental model:
+
+```text
+User interaction
+      ↓
+setCount(...)
+      ↓
+React records the state update
+      ↓
+React schedules a render
+      ↓
+Component function runs again
+      ↓
+useState gives you the updated value
+      ↓
+React updates the DOM where necessary
+```
+
+Important:
+
+**Calling the setter doesn't immediately change the `count` variable inside the current render.**
+
+For example:
+
+```tsx
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  function handleClick() {
+    setCount(count + 1);
+
+    console.log(count);
+  }
+}
+```
+
+The `console.log` can still see:
+
+```text
+0
+```
+
+during that execution.
+
+The new state is available in the **next render**.
+
+This is because each render has its own snapshot of state.
+
+---
+
+### 7. Common confusion: Does `useState` cause a re-render?
+
+Yes, when you update state:
+
+```tsx
+setCount(1);
+```
+
+React schedules the component to render again.
+
+But don't think:
+
+```text
+setState → immediately render
+```
+
+A better mental model is:
+
+```text
+setState
+   ↓
+React schedules an update
+   ↓
+React renders
+   ↓
+React commits necessary DOM changes
+```
+
+React may also **batch multiple state updates** together.
+
+---
+
+### 8. State can be any value
+
+Not just numbers.
+
+**String**
+
+```tsx
+const [name, setName] = useState("");
+```
+
+**Boolean**
+
+```tsx
+const [isOpen, setIsOpen] = useState(false);
+```
+
+**Array**
+
+```tsx
+const [users, setUsers] = useState<User[]>([]);
+```
+
+**Object**
+
+```tsx
+const [user, setUser] = useState({
+  name: "",
+  age: 0
+});
+```
+
+---
+
+### 9. Updating objects
+
+Don't mutate the existing state directly.
+
+❌
+
+```tsx
+user.name = "John";
+setUser(user);
+```
+
+Instead create a new object:
+
+```tsx
+setUser({
+  ...user,
+  name: "John"
+});
+```
+
+Mental model:
+
+> **Treat React state as immutable. Create a new value instead of modifying the existing one.**
+
+---
+
+### 10. Lazy initial state
+
+Sometimes calculating the initial state is expensive.
+
+Instead of:
+
+```tsx
+const [users, setUsers] = useState(createUsers());
+```
+
+you can provide a function:
+
+```tsx
+const [users, setUsers] = useState(() => createUsers());
+```
+
+The function tells React:
+
+> "Call this to calculate the initial state."
+
+This is called **lazy initialization**.
+
+Don't use it everywhere; it's useful when the initial calculation is actually expensive.
+
+---
+
+### 11. Senior interview questions
+
+**Q1. What is `useState`?**
+
+> `useState` is a React Hook that allows a function component to maintain state between renders. Updating the state through its setter schedules a re-render so React can update the UI.
+
+**Q2. Why doesn't changing a normal variable update the UI?**
+
+Because React doesn't track normal variables.
+
+```tsx
+let count = 0;
+count++;
+```
+
+React isn't notified.
+
+With:
+
+```tsx
+setCount(count + 1);
+```
+
+React knows that state changed and schedules an update.
+
+**Q3. Why use the functional form?**
+
+```tsx
+setCount(prev => prev + 1);
+```
+
+When the new state depends on the previous state.
+
+It allows React to calculate the next state from the latest queued state value.
+
+**Q4. Does calling `setState` immediately change the state variable?**
+
+No.
+
+The current render keeps its existing state snapshot. The updated value is available during a subsequent render.
+
+**Q5. Can state contain objects and arrays?**
+
+Yes.
+
+But state should be treated as immutable:
+
+```tsx
+setUser({
+  ...user,
+  name: "John"
+});
+```
+
+rather than directly mutating:
+
+```tsx
+user.name = "John";
+```
+
+**Q6. What happens when state changes?**
+
+At a high level:
+
+```text
+setState
+   ↓
+React schedules update
+   ↓
+Component renders again
+   ↓
+React compares the result
+   ↓
+DOM is updated where necessary
+```
+
+---
+
+### Revision notes 🧠
+
+```text
+useState
+────────
+
+Purpose:
+Remember data between renders.
+
+const [value, setValue] = useState(initialValue);
+
+value
+→ current state for this render
+
+setValue
+→ request a state update + re-render
+
+Important:
+→ Normal variables don't trigger React renders.
+→ State survives re-renders.
+→ State updates are not immediately reflected in the current render.
+→ Each render sees its own state snapshot.
+→ Use functional updates when new state depends on previous state.
+→ Treat objects/arrays in state as immutable.
+→ React may batch multiple state updates.
+```
+
+### One sentence to remember for interviews
+
+> **`useState` gives a component persistent state between renders, and its setter tells React that the state changed so the component can render again.**
+
+---
+
+## React `useEffect` — Simple Mental Model
+
+### 1. The problem
+
+A component sometimes needs to **do something outside of rendering** — fetch data, subscribe to an event, start a timer, sync with the DOM.
+
+You might be tempted to just run it directly in the function body:
+
+```tsx
+function UserProfile({ userId }) {
+  const [user, setUser] = useState(null);
+
+  fetch(`/api/users/${userId}`)
+    .then(res => res.json())
+    .then(data => setUser(data));
+
+  return <div>{user?.name}</div>;
+}
+```
+
+This is broken.
+
+Why?
+
+```text
+Render happens
+    ↓
+fetch() starts
+    ↓
+setUser() called when data arrives
+    ↓
+setUser() schedules a re-render
+    ↓
+Render happens again
+    ↓
+fetch() starts AGAIN
+    ↓
+infinite loop of requests
+```
+
+Rendering has to stay a pure calculation of "props/state → UI." Side effects need to run **separately**, only when something actually changed — that's what `useEffect` is for.
+
+---
+
+### 2. Core mental model
+
+Think of `useEffect` as:
+
+> **Code that runs after React has updated the screen, and only re-runs when the things it depends on actually change.**
+
+```tsx
+useEffect(() => {
+  fetchUser(userId).then(setUser);
+}, [userId]);
+```
+
+```text
+[userId]
+    ↑
+"only re-run this effect when userId changes"
+```
+
+There are three shapes of the dependency array, and they mean three very different things:
+
+```text
+useEffect(fn)          → runs after EVERY render
+useEffect(fn, [])      → runs once, after the FIRST render
+useEffect(fn, [a, b])  → runs after the first render, and again whenever a or b changes
+```
+
+---
+
+### 3. Small example
+
+```tsx
+function UserProfile({ userId }) {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetch(`/api/users/${userId}`)
+      .then(res => res.json())
+      .then(data => {
+        if (!cancelled) setUser(data);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
+
+  return <div>{user?.name}</div>;
+}
+```
+
+Trace it through:
+
+**First render**, `userId = 1`
+
+```text
+Render → UI shows nothing yet
+    ↓
+Paint happens
+    ↓
+useEffect runs → fetch starts for userId=1
+    ↓
+data arrives → setUser(data)
+    ↓
+Re-render → UI shows user 1's name
+```
+
+**Prop changes**, `userId = 2`
+
+```text
+Render (userId=2)
+    ↓
+Paint happens
+    ↓
+React sees userId changed (1 → 2)
+    ↓
+runs CLEANUP from the previous effect (cancelled = true)
+    ↓
+runs the NEW effect → fetch starts for userId=2
+```
+
+That cleanup step is what stops the stale request for user 1 from overwriting user 2's data if it resolves late.
+
+---
+
+### 4. Why can't the fetch just run during render?
+
+This is a very common interview question.
+
+❌ Fetching directly in the component body:
+
+```tsx
+fetch(`/api/users/${userId}`).then(res => res.json()).then(setUser);
+```
+
+```text
+Runs on EVERY render
+    ↓
+setUser() triggers another render
+    ↓
+which runs the fetch again
+    ↓
+infinite loop
+```
+
+✅ `useEffect` fixes this by only running:
+
+```text
+after render is committed to the screen
+    ↓
+AND only when a listed dependency actually changed
+```
+
+> **Rendering must stay pure. Side effects belong in `useEffect`, gated by the dependency array.**
+
+---
+
+### 5. The dependency array — the three cases in detail
+
+**No array — runs after every single render**
+
+```tsx
+useEffect(() => {
+  console.log("ran");
+});
+```
+
+```text
+Render 1 → "ran"
+Render 2 → "ran"
+Render 3 → "ran"
+```
+
+Rarely what you want — easy to create loops or waste work.
+
+**Empty array — runs once**
+
+```tsx
+useEffect(() => {
+  console.log("mounted");
+}, []);
+```
+
+```text
+Render 1 → "mounted"
+Render 2 → (nothing)
+Render 3 → (nothing)
+```
+
+**Array with values — runs when any of them change**
+
+```tsx
+useEffect(() => {
+  console.log("userId changed to", userId);
+}, [userId]);
+```
+
+```text
+userId = 1 → Render → "userId changed to 1"
+userId = 1 → Render (unrelated state changed) → (nothing, userId didn't change)
+userId = 2 → Render → "userId changed to 2"
+```
+
+---
+
+### 6. Cleanup functions
+
+An effect can return a function. React calls it:
+
+```text
+right before the effect runs again
+    ↓
+AND when the component unmounts
+```
+
+```tsx
+useEffect(() => {
+  const id = setInterval(() => console.log("tick"), 1000);
+
+  return () => clearInterval(id);
+}, []);
+```
+
+Trace it:
+
+```text
+Mount → interval created
+    ↓
+Component removed from screen
+    ↓
+cleanup runs → clearInterval(id)
+```
+
+Without the cleanup, the interval would keep running forever, even after the component is gone — a memory leak.
+
+---
+
+### 7. What happens internally?
+
+```text
+State/props change
+      ↓
+React re-renders the component
+      ↓
+React updates the DOM (commit)
+      ↓
+Browser paints the screen
+      ↓
+React checks: did any dependency change?
+      ↓
+  Yes → run previous cleanup, then run the new effect
+  No  → skip the effect entirely
+```
+
+Important:
+
+**Effects never block the browser from painting.** They always run after the user has already seen the update.
+
+---
+
+### 8. Common confusion: Does `useEffect` run during render?
+
+No.
+
+Don't think:
+
+```text
+useEffect → part of rendering
+```
+
+Think:
+
+```text
+Render → produces UI (pure)
+Paint  → browser shows it
+Effect → runs AFTER, as a separate step
+```
+
+This is also why you can't compute a value you need *during* render inside a `useEffect` — by the time it runs, that render has already finished and been shown.
+
+---
+
+### 9. Common mistakes
+
+❌ Missing a dependency — the effect keeps using an old value:
+
+```tsx
+useEffect(() => {
+  console.log(count); // always logs the count from the FIRST render
+}, []); // count is missing here
+```
+
+❌ Object/array literals as dependencies — new reference every render, effect re-runs on every render even though nothing meaningful changed:
+
+```tsx
+useEffect(() => {
+  doSomething();
+}, [{ id: userId }]); // new object every render → always "changed"
+```
+
+❌ Forgetting cleanup for subscriptions/timers/listeners → leaks.
+
+❌ Making the effect callback itself `async`:
+
+```tsx
+useEffect(async () => { ... }, []); // ❌ not allowed — effects must return a cleanup function or nothing, not a Promise
+```
+
+✅ Fix — define the async function inside, then call it:
+
+```tsx
+useEffect(() => {
+  async function load() {
+    const data = await fetchUser(userId);
+    setUser(data);
+  }
+  load();
+}, [userId]);
+```
+
+---
+
+### 10. `useEffect` vs `useLayoutEffect`
+
+```text
+useEffect
+    ↓
+runs AFTER paint (async, non-blocking)
+
+useLayoutEffect
+    ↓
+runs BEFORE paint (sync, blocks it)
+```
+
+| | `useEffect` | `useLayoutEffect` |
+|---|---|---|
+| Use for | fetching, subscriptions, logging | measuring/mutating DOM before paint |
+| Cost | cheap | can block the browser if overused |
+
+---
+
+### 11. Senior interview questions
+
+**Q1. What is `useEffect` for?**
+
+> `useEffect` lets a component run side effects — code that isn't part of pure rendering, like data fetching, subscriptions, or DOM synchronization — after React has committed the render to the screen.
+
+**Q2. What do the three forms of the dependency array mean?**
+
+```text
+no array   → runs after every render
+[]         → runs once, after the first render
+[a, b]     → runs after first render, then again whenever a or b changes
+```
+
+**Q3. Why can't the effect callback be `async`?**
+
+Because React expects the function passed to `useEffect` to return either nothing or a cleanup function — a `Promise` isn't a valid return value there, so React would call it as if it were a cleanup function, which breaks.
+
+**Q4. What does the cleanup function actually prevent?**
+
+Leftover subscriptions, timers, or listeners that would otherwise keep running after the component that created them is gone, or after the effect re-runs with new values.
+
+**Q5. If you leave a used variable out of the dependency array, what actually happens?**
+
+The effect isn't stopped from being affected by that variable changing — it just keeps using whatever value that variable had when the effect was created, which is a stale value. This is the most common source of `useEffect` bugs — often caused by a **stale closure**, where a function created during one render keeps referencing that render's values even after time has passed.
+
+**Q6. Does `useEffect` block the browser from painting?**
+
+No — it always runs after paint. `useLayoutEffect` is the one that runs synchronously before paint, and it can block the browser if overused. Use it only when you need to measure or synchronously adjust the DOM before the user sees the result.
+
+---
+
+### Revision notes 🧠
+
+```text
+useEffect
+─────────
+
+Purpose:
+Run side effects after React updates the screen.
+
+useEffect(() => {
+  // effect
+  return () => {
+    // cleanup
+  };
+}, [dependencies]);
+
+Dependency array:
+→ no array   → runs after every render
+→ []         → runs once, after first render
+→ [a, b]     → runs when a or b changes
+
+Important:
+→ Effects run AFTER paint, never block the screen from updating.
+→ Cleanup runs before the next effect, and on unmount.
+→ Leaving a dependency out doesn't stop it from changing — the effect just uses a stale value.
+→ New object/array literals as dependencies re-run the effect every render.
+→ The effect function itself can't be async — define an async function inside and call it.
+→ useLayoutEffect runs BEFORE paint (blocking) — only for DOM measurement/adjustment.
+```
+
+### One sentence to remember for interviews
+
+> **`useEffect` runs side effects after React paints the screen, re-running only when a listed dependency changes, and its cleanup function prevents leftover subscriptions or timers from a previous run.**
+
+---
+
+## React `useRef` — Simple Mental Model
+
+### 1. The problem
+
+Sometimes a component needs to hold onto a value across renders, but that value **should not cause a re-render** when it changes — a timer ID, a DOM node, a flag like "has this already run."
+
+Using `useState` for this works, but re-renders the whole component unnecessarily every time you update it:
+
+```tsx
+const [timerId, setTimerId] = useState(null); // causes a re-render every time you just want to store an ID
+```
+
+And a plain variable doesn't survive between renders at all:
+
+```text
+Render 1 → let id = null
+Render 2 → let id = null   (recreated, previous value lost)
+```
+
+We need something that **persists across renders without triggering one**.
+
+---
+
+### 2. Core mental model
+
+Think of `useRef` as:
+
+> **A box that React hands you once, and keeps handing you back — you can read and write `.current` freely, and React never re-renders because of it.**
+
+```tsx
+const ref = useRef(initialValue);
+```
+
+```text
+ref.current
+    ↑
+read or write this directly, anytime
+```
+
+Compare directly with `useState`:
+
+```text
+useState → remember AND re-render when it changes
+useRef   → remember, React does not care when it changes
+```
+
+---
+
+### 3. Small example
+
+```tsx
+function TextInputWithFocusButton() {
+  const inputRef = useRef(null);
+
+  function handleClick() {
+    inputRef.current.focus();
+  }
+
+  return (
+    <>
+      <input ref={inputRef} />
+      <button onClick={handleClick}>Focus the input</button>
+    </>
+  );
+}
+```
+
+Trace it through:
+
+**First render**
+
+```text
+inputRef = { current: null }
+    ↓
+JSX renders the <input>
+    ↓
+React commits it to the DOM
+    ↓
+React sets inputRef.current = the actual <input> DOM node
+```
+
+**Click the button**
+
+```text
+handleClick runs
+    ↓
+inputRef.current.focus()
+    ↓
+the real DOM node is focused
+    ↓
+NO re-render happened — nothing about the render output changed
+```
+
+---
+
+### 4. Why not just use a regular variable?
+
+❌
+
+```tsx
+function Timer() {
+  let id = null;
+
+  function start() {
+    id = setInterval(...);
+  }
+
+  function stop() {
+    clearInterval(id); // id is back to null — this render never saw `start`'s id
+  }
+}
+```
+
+```text
+Every render creates a NEW `id` variable
+    ↓
+the `id` set in a previous render's `start()` is lost
+```
+
+✅
+
+```tsx
+const idRef = useRef(null);
+
+function start() {
+  idRef.current = setInterval(...);
+}
+
+function stop() {
+  clearInterval(idRef.current); // same object across renders — value survives
+}
+```
+
+`useRef` gives you the persistence a normal variable can't, without the re-render `useState` would force.
+
+---
+
+### 5. `useRef` vs `useState` — does it cause a re-render?
+
+```tsx
+function Counter() {
+  const renderCountRef = useRef(0);
+  const [count, setCount] = useState(0);
+
+  renderCountRef.current = renderCountRef.current + 1;
+
+  return (
+    <button onClick={() => setCount(count + 1)}>
+      Clicked {count} times. Rendered {renderCountRef.current} times.
+    </button>
+  );
+}
+```
+
+Trace it:
+
+```text
+Click button
+    ↓
+setCount(1) → schedules a re-render
+    ↓
+Render runs → renderCountRef.current updated to new number
+    ↓
+UI shows both numbers correctly
+```
+
+But if instead you tried:
+
+```tsx
+function BrokenCounter() {
+  const countRef = useRef(0);
+
+  return (
+    <button onClick={() => { countRef.current++; }}>
+      {countRef.current}
+    </button>
+  );
+}
+```
+
+```text
+Click button
+    ↓
+countRef.current becomes 1
+    ↓
+NO re-render was scheduled
+    ↓
+UI still shows the OLD value on screen
+```
+
+> **If a value needs to be reflected on screen, it must be state. If React doesn't need to know it changed, it can be a ref.**
+
+---
+
+### 6. Common uses
+
+- Accessing a DOM node directly (focus, scroll position, measuring size)
+- Storing a timer/interval ID to clear later
+- Storing the previous value of a prop/state for comparison
+- A guard flag, like "has the initial fetch already run," without triggering an extra render
+
+---
+
+### 7. What happens internally?
+
+```text
+useRef(initialValue)
+    ↓
+React creates { current: initialValue } ONCE
+    ↓
+returns the SAME object on every subsequent render
+```
+
+When attached to a JSX element via `ref={...}`:
+
+```text
+Commit phase
+    ↓
+React sets ref.current = the real DOM node
+    ↓
+On unmount → ref.current is set back to null
+```
+
+Mutating `.current` never goes through React's update system — React genuinely doesn't know it happened.
+
+---
+
+### 8. Common confusion
+
+❌ "`useRef` is only for DOM elements."
+
+No — it's a general-purpose persistent box. DOM access is just its most common single use.
+
+❌ "Reading `ref.current` during render to decide what to show is fine."
+
+Reading a ref value to *attach* it (`ref={inputRef}`) is fine. Using a ref's value to compute what gets rendered is not reliable — updates to `.current` don't trigger a re-render, so the UI can silently go stale.
+
+---
+
+### 9. Senior interview questions
+
+**Q1. What is `useRef` for?**
+
+> `useRef` returns a mutable object that persists across renders. Changing `.current` never causes a re-render, which makes it useful for values a component needs to remember but that shouldn't affect what's displayed, plus direct access to DOM nodes.
+
+**Q2. Why doesn't updating a ref cause a re-render?**
+
+Because it's a plain object outside of React's state-tracking system — there's no scheduling step involved, unlike calling a `useState` setter.
+
+**Q3. When would you choose `useRef` over `useState`?**
+
+When the value doesn't need to affect the rendered output — a timer ID, a previous value for comparison, a guard flag — and you specifically want to avoid the extra re-render `useState` would cause.
+
+**Q4. Can `useRef` replace instance variables from class components?**
+
+Yes — that's effectively one of its purposes: giving function components a place to store a mutable value across the component's lifetime, similar to `this.something` in a class.
+
+**Q5. If you increment a ref value inside a click handler, why doesn't the UI update?**
+
+Because incrementing `.current` doesn't schedule a render — React has no idea the value changed, so whatever was last rendered stays on screen until something else triggers a re-render.
+
+---
+
+### Revision notes 🧠
+
+```text
+useRef
+──────
+
+Purpose:
+Hold a value across renders WITHOUT causing a re-render.
+
+const ref = useRef(initialValue);
+ref.current  → read or write directly, anytime
+
+Important:
+→ Same object identity across every render.
+→ Changing .current never schedules a re-render.
+→ Attaching to a DOM element via ref={...} gives .current the real node after commit.
+→ Use it for: DOM access, timer/interval IDs, previous values, guard flags.
+→ If the value must show on screen, use useState instead.
+```
+
+### One sentence to remember for interviews
+
+> **`useRef` gives a component a mutable value that survives across renders without ever triggering a re-render when it changes — used for direct DOM access, or for any value that doesn't need to affect what's displayed.**
+
+---
+
+## React `useReducer` — Simple Mental Model
+
+### 1. The problem
+
+`useState` works well for independent, simple values. It gets messy once:
+
+```tsx
+const [values, setValues] = useState({});
+const [errors, setErrors] = useState({});
+const [touched, setTouched] = useState({});
+
+function handleSubmit() {
+  setValues({ ...values, submitted: true });
+  setErrors(validate(values));
+  setTouched({ ...touched, all: true });
+}
+```
+
+```text
+Every event handler needs to know how to correctly
+update THREE related pieces of state, in the right order,
+without forgetting one of them.
+```
+
+As the number of related state transitions grows, this becomes easy to get wrong.
+
+---
+
+### 2. Core mental model
+
+Think of `useReducer` as:
+
+> **Instead of updating state directly, you describe WHAT HAPPENED, and one function decides the new state.**
+
+```tsx
+const [state, dispatch] = useReducer(reducer, initialState);
+```
+
+```text
+dispatch({ type: "increment" })
+        ↓
+reducer(currentState, action)
+        ↓
+returns the NEW state
+```
+
+The reducer is just a function:
+
+```tsx
+function reducer(state, action) {
+  switch (action.type) {
+    case "increment":
+      return { count: state.count + 1 };
+    default:
+      return state;
+  }
+}
+```
+
+---
+
+### 3. Small example
+
+```tsx
+function reducer(state, action) {
+  switch (action.type) {
+    case "increment":
+      return { count: state.count + 1 };
+    case "decrement":
+      return { count: state.count - 1 };
+    default:
+      throw new Error("Unknown action: " + action.type);
+  }
+}
+
+function Counter() {
+  const [state, dispatch] = useReducer(reducer, { count: 0 });
+
+  return (
+    <>
+      <button onClick={() => dispatch({ type: "decrement" })}>-</button>
+      {state.count}
+      <button onClick={() => dispatch({ type: "increment" })}>+</button>
+    </>
+  );
+}
+```
+
+Trace it through:
+
+**First render**
+
+```text
+state = { count: 0 }
+```
+
+**Click "+"**
+
+```text
+dispatch({ type: "increment" })
+    ↓
+reducer({ count: 0 }, { type: "increment" })
+    ↓
+returns { count: 1 }
+    ↓
+React schedules a re-render with the new state
+```
+
+**Second render**
+
+```text
+state = { count: 1 }
+```
+
+---
+
+### 4. Why not just multiple `useState` calls?
+
+```text
+useState:   scatter update logic across every handler that touches this data
+useReducer: centralize update logic into ONE function you can read top to bottom
+```
+
+Compare:
+
+```tsx
+// useState version — logic spread out
+function handleSubmit() {
+  setValues({ ...values, submitted: true });
+  setErrors(validate(values));
+}
+```
+
+```tsx
+// useReducer version — logic centralized
+dispatch({ type: "submit" });
+
+// all handled in one place:
+function reducer(state, action) {
+  switch (action.type) {
+    case "submit":
+      return {
+        ...state,
+        values: { ...state.values, submitted: true },
+        errors: validate(state.values)
+      };
+  }
+}
+```
+
+> **`useReducer` doesn't add new capability — it organizes state transitions in one place instead of scattering them.**
+
+---
+
+### 5. The reducer must be a pure function
+
+❌
+
+```tsx
+function reducer(state, action) {
+  fetch("/api/log", { method: "POST" }); // ❌ side effect inside the reducer
+  state.count++; // ❌ mutating state directly
+  return state;
+}
+```
+
+✅
+
+```tsx
+function reducer(state, action) {
+  switch (action.type) {
+    case "increment":
+      return { ...state, count: state.count + 1 }; // new object, no side effects
+  }
+}
+```
+
+Side effects (like a fetch) belong in `useEffect`, which then dispatches an action once the result comes back:
+
+```tsx
+useEffect(() => {
+  fetchData().then(data => dispatch({ type: "loaded", payload: data }));
+}, []);
+```
+
+---
+
+### 6. `useState` vs `useReducer`
+
+| | `useState` | `useReducer` |
+|---|---|---|
+| Best for | independent, simple values | related fields, or state transitions with real branching logic |
+| How you update | `setValue(newValue)` | `dispatch({ type, payload })` |
+| Where the logic lives | scattered across event handlers | centralized in one reducer function |
+| Testability | harder to test update logic in isolation | reducer is a pure function — trivial to unit test on its own |
+
+---
+
+### 7. What happens internally?
+
+```text
+dispatch(action)
+      ↓
+React calls reducer(currentState, action)
+      ↓
+React stores the returned value as the new state
+      ↓
+React schedules a re-render
+      ↓
+Component re-runs, useReducer returns the new state
+```
+
+This follows the exact same scheduling and batching rules as `useState` — `dispatch` doesn't run the reducer synchronously inside your event handler's mental timeline any differently than `setState` does.
+
+---
+
+### 8. Common confusion
+
+❌ "`useReducer` is only useful for large, complex apps."
+
+No — it's a local state tool. It's worth reaching for the moment one component has several related state transitions, regardless of overall app size.
+
+❌ "`useReducer` replaces Redux."
+
+`useReducer` manages state local to one component. Redux (or similar) is for state shared globally across the app, with additional tooling (middleware, devtools, selectors) `useReducer` doesn't provide on its own.
+
+---
+
+### 9. Senior interview questions
+
+**Q1. When would you reach for `useReducer` instead of several `useState` calls?**
+
+> When multiple pieces of state change together in response to the same event, or when the next state depends meaningfully on which action occurred — centralizing that logic in one reducer avoids scattering it across handlers.
+
+**Q2. Does `useReducer` improve performance compared to `useState`?**
+
+Not by itself — it's an organizational tool, not a performance optimization. One indirect benefit: `dispatch`'s reference is stable across renders, which helps when it's passed down to a memoized child component.
+
+**Q3. Can the reducer function have side effects, like an API call?**
+
+No — it must be pure. Side effects belong in `useEffect`, which dispatches an action once the result is available.
+
+**Q4. What does dispatching an "unknown" action type typically do?**
+
+Convention is to either return the current state unchanged, or throw an error to catch bugs early — depends on whether unknown actions should fail loudly or be safely ignored.
+
+**Q5. How is `useReducer` similar to `Array.prototype.reduce`?**
+
+Both take a current accumulated value and an incoming item, and produce the next accumulated value — `useReducer`'s "accumulator" is your component's state, and each `dispatch` call is like one more item being reduced into it.
+
+---
+
+### Revision notes 🧠
+
+```text
+useReducer
+──────────
+
+Purpose:
+Centralize state transitions into one pure function.
+
+const [state, dispatch] = useReducer(reducer, initialState);
+dispatch({ type: "action_name", payload });
+
+function reducer(state, action) {
+  switch (action.type) {
+    case "...": return newState;
+  }
+}
+
+Important:
+→ Reducer must be pure — no side effects, no mutation, always return a new object.
+→ Use when multiple related fields change together, or logic branches by action type.
+→ dispatch's identity is stable across renders.
+→ Not a performance tool by itself — an organizational one.
+```
+
+### One sentence to remember for interviews
+
+> **`useReducer` centralizes state updates into one pure reducer function driven by named actions, instead of scattering update logic across every event handler that touches related state.**
+
+---
+
+## React `useContext` — Simple Mental Model
+
+### 1. The problem
+
+Some values — theme, logged-in user, locale — are needed by components at many different nesting depths.
+
+```tsx
+function App({ theme }) {
+  return <Layout theme={theme} />;
+}
+
+function Layout({ theme }) {
+  return <Sidebar theme={theme} />;
+}
+
+function Sidebar({ theme }) {
+  return <Widget theme={theme} />;
+}
+
+function Widget({ theme }) {
+  return <div className={theme}>...</div>;
+}
+```
+
+```text
+Layout and Sidebar don't actually use `theme`
+    ↓
+they're just forwarding it down
+    ↓
+this is called "prop drilling"
+```
+
+Every intermediate component has to know about a prop it doesn't even need, just to pass it along.
+
+---
+
+### 2. Core mental model
+
+Think of `useContext` as:
+
+> **A value broadcast from one point in the tree, that any component below it can read directly, without it being passed down as a prop.**
+
+```tsx
+const ThemeContext = createContext("light");
+```
+
+```text
+createContext(defaultValue)
+    ↓
+creates a "channel" components can tune into
+```
+
+```tsx
+<ThemeContext.Provider value="dark">
+  <Layout />
+</ThemeContext.Provider>
+```
+
+```text
+Provider value="dark"
+    ↓
+broadcasts "dark" to everything nested inside it
+```
+
+```tsx
+const theme = useContext(ThemeContext);
+```
+
+```text
+useContext(ThemeContext)
+    ↓
+"give me whatever the nearest Provider above me is broadcasting"
+```
+
+---
+
+### 3. Small example
+
+```tsx
+const ThemeContext = createContext("light");
+
+function App() {
+  return (
+    <ThemeContext.Provider value="dark">
+      <Toolbar />
+    </ThemeContext.Provider>
+  );
+}
+
+function Toolbar() {
+  return <Widget />; // doesn't need to know about theme at all
+}
+
+function Widget() {
+  const theme = useContext(ThemeContext);
+  return <div className={theme}>Current theme: {theme}</div>;
+}
+```
+
+Trace it through:
+
+```text
+App renders, Provider broadcasts "dark"
+    ↓
+Toolbar renders — never touches theme
+    ↓
+Widget renders, calls useContext(ThemeContext)
+    ↓
+receives "dark" directly from the Provider two levels up
+```
+
+`Toolbar` never had to know `theme` existed.
+
+---
+
+### 4. Why not just pass props everywhere?
+
+```text
+Props:    explicit, but every intermediate component must forward it
+Context:  implicit, but no intermediate component needs to know about it
+```
+
+Prop drilling isn't *wrong* — for 1-2 levels it's often clearer and easier to trace than context. Context earns its cost when a value is needed at many different, unpredictable depths.
+
+---
+
+### 5. The gotcha: every consumer re-renders on any value change
+
+```tsx
+function App() {
+  const [user, setUser] = useState(null);
+  const [theme, setTheme] = useState("light");
+
+  return (
+    <AppContext.Provider value={{ user, setUser, theme, setTheme }}>
+      <Rest />
+    </AppContext.Provider>
+  );
+}
+```
+
+Trace what happens when only `theme` changes:
+
+```text
+setTheme("dark") called
+    ↓
+App re-renders
+    ↓
+a BRAND NEW { user, setUser, theme, setTheme } object is created
+    ↓
+Provider's value reference changed
+    ↓
+EVERY component calling useContext(AppContext) re-renders
+    ↓
+even ones that only ever read `user`, and don't care about theme
+```
+
+```text
+React.memo does NOT prevent this —
+useContext reads bypass the props comparison React.memo relies on entirely.
+```
+
+Fix: split into separate contexts (`UserContext`, `ThemeContext`) so a theme change doesn't force a re-render in components that only read the user, and/or memoize the value object with `useMemo` so its reference stays stable when nothing relevant changed.
+
+---
+
+### 6. What happens internally?
+
+```text
+useContext(SomeContext)
+    ↓
+React looks UP the tree for the nearest matching Provider
+    ↓
+subscribes this component to that Provider's value
+    ↓
+Provider's value changes
+    ↓
+every subscribed component is scheduled to re-render
+```
+
+If there's no matching `Provider` above it, `useContext` returns the default value passed to `createContext`.
+
+---
+
+### 7. Common confusion
+
+❌ "Context is a state management library like Redux."
+
+No — context is only a transport mechanism. It has no concept of actions, middleware, or selective subscriptions; anything more than that (undo/redo, selectors, devtools) is built on top of it, not part of it.
+
+❌ "Memoizing a consumer component with `React.memo` prevents it from re-rendering on a context change."
+
+No — `React.memo` only compares props. A `useContext` read isn't a prop, so it re-renders regardless of memoization.
+
+---
+
+### 8. Senior interview questions
+
+**Q1. What problem does `useContext` solve?**
+
+> It avoids prop drilling — letting a component read a value directly from the nearest Provider above it, instead of every intermediate component forwarding that value as a prop it doesn't use.
+
+**Q2. Does `React.memo` protect a component from re-rendering when a context value changes?**
+
+No — context reads happen independently of props, so `React.memo`'s props comparison doesn't apply to them at all.
+
+**Q3. Why can putting everything in one big context object hurt performance?**
+
+Because any change to any field creates a new value object, and every component consuming that context re-renders — even ones that only cared about a field that didn't change.
+
+**Q4. How would you fix a context causing too many re-renders?**
+
+Split the state into multiple, narrower contexts based on what actually changes together, and/or memoize the value passed to the Provider so its reference is stable across renders where nothing relevant changed.
+
+**Q5. What does `useContext` return if there's no Provider above it in the tree?**
+
+The default value that was passed to `createContext(defaultValue)`.
+
+---
+
+### Revision notes 🧠
+
+```text
+useContext
+──────────
+
+Purpose:
+Avoid prop drilling by broadcasting a value to every
+component nested under a Provider.
+
+const SomeContext = createContext(defaultValue);
+<SomeContext.Provider value={x}>...</SomeContext.Provider>
+const value = useContext(SomeContext);
+
+Important:
+→ Transport mechanism only — not a state management library.
+→ Every consumer re-renders when the Provider's value changes.
+→ React.memo does NOT protect against context-triggered re-renders.
+→ Split into multiple contexts, or memoize the value, to limit re-render scope.
+→ Returns createContext's default value if no Provider is above it.
+```
+
+### One sentence to remember for interviews
+
+> **`useContext` lets any component below a Provider read a broadcast value directly, avoiding prop drilling — but every consumer re-renders on any change to that value, and `React.memo` doesn't protect against it since context reads bypass props entirely.**
+
+---
+
+## Custom Hooks
+
+### 1. The problem
+
+Several components need the same stateful logic:
+
+```text
+Component A → fetch users, track loading, track error
+Component B → fetch users, track loading, track error
+Component C → fetch users, track loading, track error
+```
+
+Copy-pasting that `useState`/`useEffect` logic into every component duplicates it three times over — and a bug fix now has to happen in three places.
+
+### 2. Core mental model
+
+> **A Custom Hook is a reusable function that contains React Hook logic — its name starts with `use`, and it can call other hooks internally.**
+
+```tsx
+function useUsers() {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchUsers()
+      .then(setUsers)
+      .finally(() => setLoading(false));
+  }, []);
+
+  return { users, loading };
+}
+```
+
+```tsx
+function UserList() {
+  const { users, loading } = useUsers(); // no duplicated logic
+}
+```
+
+### 3. The gotcha: shares logic, NOT state
+
+```tsx
+function useCounter() {
+  const [count, setCount] = useState(0);
+  return { count, increment: () => setCount(c => c + 1) };
+}
+```
+
+```tsx
+const counterA = useCounter();
+const counterB = useCounter();
+```
+
+```text
+Component A calls useCounter() → gets its OWN state slot → State A
+Component B calls useCounter() → gets its OWN state slot → State B
+```
+
+Incrementing `counterA` never affects `counterB` — the *logic* (how to count) is shared, but each call creates a completely independent `useState` instance. This is a very common senior interview question, because the instinct is to assume a shared function means shared state.
+
+### 4. Custom Hook vs. utility function
+
+```text
+formatCurrency(amount)   → plain JS, no hooks inside      → utility function
+useOnlineStatus()        → calls useState/useEffect inside → Custom Hook
+```
+
+If a function doesn't call any React hooks internally, it's just a regular function — naming it `useX` without using hooks inside is misleading, not a Custom Hook.
+
+### 5. Worked example — `useDebounce`
+
+```tsx
+function useDebounce<T>(value: T, delay: number) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+```
+
+```text
+User types "r" → value="r" → timer starts (500ms)
+User types "re" before timer fires → OLD timer cancelled, NEW timer starts
+... user keeps typing ...
+User stops typing "react" → 500ms passes uninterrupted → debouncedValue updates to "react"
+```
+
+This combines `useState` + `useEffect` + cleanup into one reusable unit — exactly the pattern that makes something a Custom Hook rather than a one-off effect.
+
+### Interview Questions
+
+**Q1. Can two components share state through the same Custom Hook?**
+
+No. A Custom Hook shares *logic* — each call site gets its own independent `useState`/`useReducer` slots. Shared state across components requires lifting state up or using context/a store, not a Custom Hook by itself.
+
+**Q2. What makes something a Custom Hook instead of a regular utility function?**
+
+It calls other React hooks internally (`useState`, `useEffect`, etc.) — the `use` prefix is a convention that also lets the linter enforce the Rules of Hooks on it.
+
+### Revision notes 🧠
+
+```text
+Custom Hooks
+────────────
+
+Purpose:
+Extract and reuse stateful logic across components.
+
+function useSomething() {
+  // uses useState/useEffect/etc internally
+  return value;
+}
+
+Important:
+→ Shares LOGIC, not state — each call gets independent state slots.
+→ Must call a real hook internally to count as a Custom Hook, not just be named useX.
+→ Naming convention (use...) lets the Rules-of-Hooks linter check it.
+```
+
+### One sentence to remember for interviews
+
+> **A Custom Hook extracts reusable stateful logic into a function starting with `use` — it shares the logic across every component that calls it, but each call still gets its own independent state.**
+
+---
+
+## Final Revision Sheet 🧠
+
+```text
+useState
+→ Remember state between renders. Setter schedules a render.
+
+useEffect
+→ Synchronize with external systems, after paint. Cleanup undoes it.
+
+useRef
+→ Persist a mutable value WITHOUT causing a render. Commonly DOM refs.
+
+useReducer
+→ Centralize state transitions through named actions.
+
+useContext
+→ Read shared context, avoiding prop drilling. Every consumer re-renders on change.
+
+Custom Hook
+→ Extract and reuse logic. Shares logic, NOT state.
+
+useMemo / useCallback           → see 3. React Performance.md
+useTransition / useDeferredValue → see useTransition.md / useDefferedValue.md
+```
+
+## Hook Selection — The Senior Mental Model
+
+Don't memorize hooks as a list — ask what problem you're solving:
+
+```text
+Remember something the UI shows?             → useState
+Synchronize with something outside React?    → useEffect
+Remember something WITHOUT re-rendering?     → useRef
+State transitions have real branching logic? → useReducer
+A value is needed deep in the tree?          → useContext
+Same React logic needed in multiple places?  → Custom Hook
+
+Expensive calculation to cache?              → useMemo (3. React Performance.md)
+Need a stable function reference?            → useCallback (3. React Performance.md)
+An update can be non-urgent?                 → useTransition (its own file)
+A value can lag behind the latest?           → useDeferredValue (its own file)
+```
+
+| Hook | Causes a re-render when changed? | Survives across renders? |
+|---|---|---|
+| `useState` | ✅ | ✅ |
+| `useEffect` | Indirectly, via any state it sets | N/A — runs after render |
+| `useRef` | ❌ | ✅ |
+| `useReducer` | ✅ | ✅ |
+| `useContext` | ✅ (every consumer, on any change) | N/A — reads from nearest Provider |
+| Custom Hook | Depends on the hooks it uses internally | Independent state per call site |

@@ -1,0 +1,16 @@
+@import 'tailwindcss';
+@import 'fumadocs-ui/css/neutral.css';
+@import 'fumadocs-ui/css/preset.css';
+
+/* Fumadocs styles search matches with `::highlight()`, which Turbopack's CSS parser
+   rejects with a warning on every request. Skip generating those utilities. */
+@source not inline('[&_::highlight(fd-search)]:{underline,text-fd-primary}');
+
+html {
+  scrollbar-gutter: stable;
+}
+
+html > body[data-scroll-locked] {
+  margin-right: 0px !important;
+  --removed-body-scroll-bar-size: 0px !important;
+}

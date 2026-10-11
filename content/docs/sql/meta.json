@@ -1,0 +1,13 @@
+{
+  "title": "SQL",
+  "pages": [
+    "topics",
+    "query-fundamentals",
+    "joins",
+    "aggregation",
+    "advance-queries",
+    "database-design-relationships",
+    "performance",
+    "query-optimization-basic"
+  ]
+}

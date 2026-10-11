@@ -1,0 +1,16 @@
+{
+  "title": "React",
+  "pages": [
+    "react-core",
+    "hooks",
+    "react-performance",
+    "react-rendering-deep-dive",
+    "state-management",
+    "data-fetching",
+    "react-architecture",
+    "next-and-ssr-architecture",
+    "react-nextjs",
+    "use-transition",
+    "use-deferred-value"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "title": "System Design",
+  "pages": [
+    "basics",
+    "availability",
+    "database-design",
+    "caching-cdn-and-async-systems",
+    "design-notification-system",
+    "rate-limit",
+    "distributed-system-essentials",
+    "networking",
+    "storage-and-large-data",
+    "video-upload"
+  ]
+}
